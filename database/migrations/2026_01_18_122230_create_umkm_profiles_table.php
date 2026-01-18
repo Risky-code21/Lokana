@@ -14,6 +14,15 @@ return new class extends Migration
         Schema::create('umkm_profiles', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('short_text');
+            $table->text('full_text');
+            $table->text('address');
+            $table->foreignId('category_id')->constrained('category_umkms')->onDelete('cascade');
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
         });
     }
 

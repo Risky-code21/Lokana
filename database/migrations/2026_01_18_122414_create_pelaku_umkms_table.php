@@ -14,6 +14,13 @@ return new class extends Migration
         Schema::create('pelaku_umkms', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('umkm_id')->constrained('umkm_profiles')->onDelete('cascade');
+            $table->string('name');
+            $table->string('email');
+            $table->string('phone');
+            $table->text('address');
+            $table->unique(['email', 'phone', 'address']);
+            $table->boolean('is_verified')->default(false);
         });
     }
 

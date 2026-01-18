@@ -14,6 +14,12 @@ return new class extends Migration
         Schema::create('product_umkms', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('umkm_id')->constrained('umkm_profiles')->onDelete('cascade');
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('short_text');
+            $table->text('full_text');
+            $table->decimal('price', 12, 2);
         });
     }
 

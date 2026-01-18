@@ -14,6 +14,16 @@ return new class extends Migration
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('umkm_id')->constrained('umkm_profiles')->onDelete('cascade');
+            $table->foreignId('plan_id')->constrained('subscription_plans')->onDelete('cascade');
+            $table->integer('unique_code');
+            $table->decimal('total_amount', 12, 2);
+            $table->text('payment_proof')->nullable();
+            $table->text('admin_notes');
+            $table->timestamp('verified_at');
+            $table->foreignId('verified by')->constrained('users')->onDelete('null');
+            $table->timestamp('starts_at');
+            $table->timestamp('expires_at');
         });
     }
 
