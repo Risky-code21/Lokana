@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('media', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->morphs();
+            $table->morphs('mediable');
             $table->text('url');
             $table->boolean('is_thumbnail')->default(false);
         });
