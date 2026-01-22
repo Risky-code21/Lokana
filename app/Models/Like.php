@@ -18,4 +18,8 @@ class Like extends Model
     {
         return $this->morphTo();
     }
+
+    // morphto
+    // composite indexes
+    // pengelolaan apakah like ini akan digunakan di lain konteks juga ?
 }
