@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('views', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('user_id')->constrained('users')->onDelete('null');
             $table->morphs('viewable');
-            $table->string('user_agent');
-            $table->text('ip_address');
+            $table->string('visitor_id', 64)->index();
+            $table->string('ip_address', 45);
+            $table->string('user_agent', 255);
+            $table->unique(['visitor_id', 'viewable_id', 'viewable_type'], 'unique_visitor_view');
         });
     }
 

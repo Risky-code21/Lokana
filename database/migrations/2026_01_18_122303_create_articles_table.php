@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            // $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
+            $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('category_articles')->onDelete('cascade');
             $table->string('slug')->unique();
-            $table->string('short_text');
-            $table->text('full_text');
+            $table->string('short_description');
+            $table->text('content');
         });
     }
 

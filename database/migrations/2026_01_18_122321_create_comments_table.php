@@ -16,8 +16,8 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->morphs('commentable');
-            $table->decimal('rating', 2, 1)->comment("Minimaal nilai rating: 1, dan maksimal nilai raing: 5");
-            $table->text('full_text');
+            $table->decimal('rating', 2, 1)->comment("Minimal nilai rating: 1, dan maksimal nilai raing: 5")->nullable();
+            $table->text('content')->nullable();
         });
     }
 

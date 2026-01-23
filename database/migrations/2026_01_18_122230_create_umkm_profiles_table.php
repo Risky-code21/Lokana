@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('umkm_profiles', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
-            $table->string('slug')->unique();
-            $table->string('short_text');
-            $table->text('full_text');
+            $table->foreignId('pelaku_umkm')->constrained('users')->onDelete('cascade');
+            $table->text('instagram_link');
+            $table->string('whatsapp_number');
+            $table->string('short_description');
+            $table->text('content');
             $table->text('address');
             $table->foreignId('category_id')->constrained('category_umkms')->onDelete('cascade');
             $table->decimal('latitude', 10, 8);
