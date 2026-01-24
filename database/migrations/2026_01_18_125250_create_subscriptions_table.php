@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('payment_proof')->nullable();
             $table->text('admin_notes');
             $table->timestamp('verified_at');
-            $table->foreignId('verified by')->constrained('users')->onDelete('null');
+            $table->foreignId('verified_by')->nullable()->constrained('users')->onDelete('restrict');
             $table->timestamp('starts_at');
             $table->timestamp('expires_at');
         });
