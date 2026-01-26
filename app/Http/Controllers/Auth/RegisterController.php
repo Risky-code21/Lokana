@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
-    protected function __construct(protected AuthService $authService) {}
+    public function __construct(protected AuthService $authService) {}
 
     public function index()
     {

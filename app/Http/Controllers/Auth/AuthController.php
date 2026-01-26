@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    protected function __construct(protected AuthService $authService) {}
+    public function __construct(protected AuthService $authService) {}
 
 
     public function index()
