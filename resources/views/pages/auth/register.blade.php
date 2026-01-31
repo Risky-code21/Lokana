@@ -20,6 +20,7 @@
             type="password" />
         <x-checkbox required name="terms" id="terms" label="I agree to the Privacy & Policy" />
         <button type="submit" class="btn-primary w-full">Sign Up</button>
+        {{-- Redirect custom ke dalam login page --}}
         <p class="text-base text-center">Have an account? <a href="{{ route('login.index') }}">Sign In</a></p>
     </form>
 @endsection

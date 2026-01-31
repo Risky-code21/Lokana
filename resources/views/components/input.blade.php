@@ -1,4 +1,4 @@
-{{-- Props untuk component input --}}
+{{-- Props untuk membuat elemen bisa dicustom sesuai keperluan --}}
 @props([
     'name' => 'input',
     'id' => null,
@@ -8,6 +8,7 @@
     'required' => false,
 ])
 
+{{-- Container untuk input component --}}
 <div class="space-y-2">
     {{-- Label input --}}
     @if ($label)

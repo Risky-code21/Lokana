@@ -12,25 +12,49 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    /**
+     *  @todo Constructor untuk menginisialisasi AuthService
+     *  yang akan digunakan di dalam controller ini.
+     *
+     *  @param AuthService $authService untuk layanan autentikasi
+     */
     public function __construct(protected AuthService $authService) {}
 
+    /**
+     *  @todo Function untuk menampilkan halaman login 
+     *
+     *  @return View untuk menampilkan view halaman login
+     */
     public function index(): View
     {
         return view('pages.auth.login');
     }
 
+    /**
+     *  @todo Function untuk melakukan autentikasi user
+     *  berdasarkan data yang dikirimkan dari form login.
+     *  Jika berhasil, user akan diarahkan ke halaman landing page semula
+     *
+     *  @param AuthUserRequest $request untuk validasi request login
+     *  @return RedirectResponse untuk mengarahkan user ke halaman landing page semula
+     */
     public function store(AuthUserRequest $request): RedirectResponse
     {
         try {
             $user = $this->authService->autentikasiUser($request->validated());
 
+            // Melakukan login user dengan opsi remember me jika dipilih
             Auth::login($user, $request->boolean('remember_me'));
 
+            // Regenerate session untuk mencegah session fixation attack
             $request->session()->regenerate();
 
-            // Akan dihapus, karena sistem login user tidak menggunakan dashboard kecuali admin
+            // Mengarahkan user ke halaman landing page semula namun dengan fitur autentikasi yang sudah aktif
             return redirect()->intended('dashboard');
-        } catch (\Exception $e) {
+        }
+        // Error umum, errornya bisa menerima error apa saja 
+        catch (\Exception $e) {
+            // Untuk audit error dengan logging
             Log::error('Login error: ' . $e->getMessage());
             return redirect()->back()->withErrors(['error' => 'Login failed. Please try again.'])->withInput();
         }

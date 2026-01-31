@@ -20,6 +20,7 @@
             <a href="" class="text-sm font-normal">Forgot Password?</a>
         </div>
         <button type="submit" class="btn-primary w-full">Sign In</button>
+        {{-- Redirect custom ke dalam register page --}}
         <p class="text-base text-center">Don't have an account? <a href="{{ route('register.index') }}">Sign Up</a></p>
     </form>
 @endsection

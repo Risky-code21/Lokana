@@ -6,9 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AuthUserRequest extends FormRequest
 {
-    protected $stopOnFirstFailure = true;
     /**
-     * Determine if the user is authorized to make this request.
+     *  @todo Hentikan validasi pada kegagalan pertama
+     *
+     *  @var boolean
+     */
+    protected $stopOnFirstFailure = true;
+
+    /**
+     *  @todo untuk menentukan apakah diizinkan melakukan request ini
+     *
+     *  @return boolean
      */
     public function authorize(): bool
     {
@@ -16,16 +24,17 @@ class AuthUserRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     *  @todo untuk memvalidasi request autentikasi user yang masuk
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     *  @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
+        // Rules untuk validasi request login user
         return [
             'email' => 'required|email',
             'password' => 'required|string|min:8',
-            'remamber_me' => 'sometimes|boolean',
+            'remember_me' => 'sometimes|boolean',
         ];
     }
 }
