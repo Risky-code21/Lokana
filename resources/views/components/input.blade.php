@@ -40,6 +40,7 @@
     {{-- Condition untuk menampilkan error message --}}
     @error($name)
         <div class="error-status-primary">
+            <x-heroicon-s-exclamation-circle class="size-5" />
             <p class="text-inherit m-0"> {{ $message }} </p>
         </div>
     @enderror

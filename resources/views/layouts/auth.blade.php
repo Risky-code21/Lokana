@@ -13,6 +13,12 @@
 <body class="bg-surface-medium flex w-full justify-center items-center h-dvh">
     {{-- Container layout --}}
     <main class="form-auth">
+        @error('error')
+            <div class="error-status-primary">
+                <x-heroicon-s-exclamation-circle class="size-5" />
+                <p class="text-inherit m-0"> {{ $message }} </p>
+            </div>
+        @enderror
         {{-- Main content layout --}}
         @yield('main')
     </main>

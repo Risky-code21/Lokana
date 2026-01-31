@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Services\AuthService;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
@@ -29,13 +29,6 @@ class RegisterController extends Controller
 
             return redirect()->intended('dashboard');
         }
-        // Error umum
-        catch (\Exception $e) {
-
-            // Untuk audit error
-            Log::error('Registration error: ' . $e->getMessage());
-            return redirect()->back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
-        }
         // Error database
         catch (QueryException $e) {
             // Race condition untuk email unik
@@ -49,6 +42,13 @@ class RegisterController extends Controller
             }
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while processing your registration. Please try again.'])->withInput();
+        }
+        // Error umum
+        catch (\Exception $e) {
+
+            // Untuk audit error
+            Log::error('Registration error: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
         }
     }
 }

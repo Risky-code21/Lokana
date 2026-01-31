@@ -10,7 +10,7 @@
     <form action="{{ route('register.store') }}" method="POST" class="space-y-6">
         @csrf
         {{-- Input username --}}
-        <x-input required name="username" id="username" placeholder="Enter your username" type="text" />
+        <x-input required name="name" id="name" placeholder="Enter your name" type="text" />
         {{-- Input email --}}
         <x-input required name="email" id="email" placeholder="Enter your email" type="email" />
         {{-- Input password --}}

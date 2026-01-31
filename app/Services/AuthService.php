@@ -12,15 +12,13 @@ class AuthService
 {
     public function registerUser(array $data): User
     {
-        $user = DB::transaction(function () use ($data) {
-            User::create([
+        return DB::transaction(function () use ($data) {
+            return User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => $data['password']
             ]);
         });
-
-        return $user;
     }
 
     public function autentikasiUser(array $credential): User

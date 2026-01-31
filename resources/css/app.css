@@ -151,7 +151,7 @@
 
 @layer components {
     .error-status-primary {
-        @apply text-sm rounded-btn border border-red-600 bg-red-200 text-red-600 px-4 py-2 flex items-center;
+        @apply text-sm rounded-btn border border-red-600 bg-red-200 text-red-600 px-4 py-2 gap-2 flex items-center;
     }
     .form-auth {
         @apply w-full max-w-md p-4 md:p-8 md:bg-surface-high rounded-card md:shadow-md;
