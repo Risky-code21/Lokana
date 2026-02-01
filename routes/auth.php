@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     // Register route
     // Register route index untuk menampilkan halaman register
-    Route::get('/', [RegisterController::class, 'index'])->name('register.index');
+    Route::get('/register', [RegisterController::class, 'index'])->name('register.index');
     // Register route store untuk memproses data registrasi user
-    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store')->middleware('throttle:auth-protection');
 
     // Login route
     // Login route index untuk menampilkan halaman login
     Route::get('login', [AuthController::class, 'index'])->name('login.index');
     // Login route store untuk memproses data autentikasi user
-    Route::post('/login', [AuthController::class, 'store'])->name('login.store');
+    Route::post('/login', [AuthController::class, 'store'])->name('login.store')->middleware('throttle:auth-protection');
 });

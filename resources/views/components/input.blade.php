@@ -6,6 +6,7 @@
     'type' => 'text',
     'label' => null,
     'required' => false,
+    'disabled' => false,
 ])
 
 {{-- Container untuk input component --}}
@@ -17,8 +18,9 @@
 
     {{-- Input field --}}
     <div class="relative flex items-center">
-        <input {{ $required ? 'required' : '' }} class="input-form-primary" type="{{ $type }}"
-            name="{{ $name }}" id="{{ $id }}" placeholder="{{ $placeholder }}">
+        <input {{ $required ? 'required' : '' }} {{ $disabled ? 'disabled' : '' }} class="input-form-primary"
+            type="{{ $type }}" name="{{ $name }}" id="{{ $id }}"
+            placeholder="{{ $placeholder }}">
 
         {{-- Condition untuk menampilkan icon eye-off pada input type password --}}
         @if ($type === 'password')

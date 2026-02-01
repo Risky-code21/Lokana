@@ -1,4 +1,5 @@
 @extends('layouts.auth')
+@section('title', 'register')
 
 @section('main')
     {{-- Header form register --}}

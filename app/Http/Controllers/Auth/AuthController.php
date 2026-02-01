@@ -8,6 +8,7 @@ use App\Services\AuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -50,7 +51,15 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             // Mengarahkan user ke halaman landing page semula namun dengan fitur autentikasi yang sudah aktif
-            return redirect()->intended('dashboard');
+            if ($user->role == 'admin') {
+                return redirect()->intended('admin/dashboard');
+            }
+            return redirect()->intended('landing-page');
+        }
+        // Lempar kembali agar ditangani otomatis oleh Handler Laravel
+        // (Akan otomatis redirect back dengan pesan error asli)
+        catch (ValidationException $e) {
+            throw $e;
         }
         // Error umum, errornya bisa menerima error apa saja 
         catch (\Exception $e) {

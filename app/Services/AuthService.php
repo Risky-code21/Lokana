@@ -38,11 +38,10 @@ class AuthService
     public function autentikasiUser(array $credential): User
     {
         // Mencari user berdasarkan email dan memverifikasi password
-        $user = User::firstOrFail('email', $credential['email']);
-        $password = Hash::check($credential['password'], $user->password);
+        $user = User::where('email', $credential['email'])->first();
 
         // Jika user tidak ditemukan atau password tidak sesuai, lemparkan exception validasi
-        if (!$user || !$password) {
+        if (!$user || !Hash::check($credential['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['incorrect email or password.'],
             ]);

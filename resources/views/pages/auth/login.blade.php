@@ -1,4 +1,5 @@
 @extends('layouts.auth')
+@section('title', 'login')
 
 @section('main')
     {{-- Header form register --}}
@@ -19,7 +20,7 @@
             {{-- Forgot password link --}}
             <a href="" class="text-sm font-normal">Forgot Password?</a>
         </div>
-        <button type="submit" class="btn-primary w-full">Sign In</button>
+        <button id="btn-submit-form" type="submit" class="btn-primary w-full">Sign In</button>
         {{-- Redirect custom ke dalam register page --}}
         <p class="text-base text-center">Don't have an account? <a href="{{ route('register.index') }}">Sign Up</a></p>
     </form>

@@ -50,6 +50,47 @@
             eyeHide.classList.toggle('hidden', isPassword)
         })
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Cek apakah ada error specific Rate Limit?
+            // Kita cari text error di layar yang mengandung kata "Tunggu" atau "seconds"
+            // (Sesuaikan dengan pesan di AppServiceProvider Anda)
+
+            const errorText = document.body.innerText;
+
+            // Cek jika ada pesan error validasi email yang mengandung angka detik
+            // Regex sederhana untuk menangkap angka di pesan "Tunggu 55 detik"
+            const waitMatch = errorText.match(/too many attempts, try again later./);
+
+            if (waitMatch) {
+                const secondsToWait = parseInt(waitMatch[1]);
+                const btn = document.getElementById('btn-submit-form');
+                const inputs = document.querySelectorAll('input');
+
+                // 2. Matikan Tombol & Input
+                btn.disabled = true;
+                inputs.forEach(input => input.disabled = true);
+
+                let counter = 60;
+                const originalText = btn.innerText;
+
+                // 3. Hitung Mundur
+                const interval = setInterval(() => {
+                    btn.innerText = `wait for ${counter}s...`;
+                    counter--;
+
+                    if (counter < 0) {
+                        // 4. Hidupkan Kembali saat waktu habis
+                        clearInterval(interval);
+                        btn.disabled = false;
+                        inputs.forEach(input => input.disabled = false);
+                        btn.innerText = originalText;
+                    }
+                }, 1000);
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -49,7 +49,7 @@ class RegisterController extends Controller
             $request->session()->regenerate();
 
             // Mengarahkan user ke halaman landing page semula namun dengan fitur autentikasi yang sudah aktif
-            return redirect()->intended('dashboard');
+            return redirect()->intended('landing-page');
         }
         // Error database
         catch (QueryException $e) {
