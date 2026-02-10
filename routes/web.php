@@ -2,11 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Route untuk guest user
-Route::get('/', function () {
-    return view('pages.landing-page');
-})->name('landing-page');
-
+// Landing page (1 route saja, jangan dobel)
 Route::get('/', function () {
     $stats = [
         'umkm' => '100+',
@@ -41,7 +37,22 @@ Route::get('/', function () {
         'url' => '#',
     ])->toArray();
 
-   return view('pages.landing-page', compact('stats', 'products', 'works', 'articles'));
+    return view('pages.landing-page', compact('stats', 'products', 'works', 'articles'));
+})->name('landing-page');
 
 
-});
+// Profile page
+Route::get('/profile', function () {
+    // dummy data (nanti bisa diganti dari DB)
+    $user = [
+        'name' => 'Yayayaahaha',
+        'role' => 'Owner MSME',
+        'location' => 'Jln. Kartini',
+        'joined' => '19 Januari 2025',
+        'avatar' => asset('images/avatar.jpg'),      // siapkan gambarnya (atau ganti)
+        'cover'  => asset('images/cover.jpg'),       // siapkan gambarnya (atau ganti)
+        'completion' => 50,
+    ];
+
+    return view('pages.profile-page', compact('user'));
+})->name('profile');
