@@ -49,8 +49,8 @@ Route::get('/profile', function () {
         'role' => 'Owner MSME',
         'location' => 'Jln. Kartini',
         'joined' => '19 Januari 2025',
-        'avatar' => asset('images/avatar.jpg'),      // siapkan gambarnya (atau ganti)
-        'cover'  => asset('images/cover.jpg'),       // siapkan gambarnya (atau ganti)
+        'avatar' => asset('images/avatar.jpg'),
+        'cover'  => asset('images/cover.jpg'),
         'completion' => 50,
     ];
 
@@ -101,17 +101,26 @@ Route::get('/explore-umkm', function () {
 
     // dummy produk
     $items = collect(range(1, 5))->map(function ($i) {
+        $title =
+            $i === 2 ? "Bali’s Craft Center" :
+            ($i === 5 ? "Bali’s Arjuna’s mask" : "Bali’s Statue Carving");
+
+        // slug sederhana dari title
+        $slug = str($title)->lower()->replace(['’', '\'', '’s'], ['','', ''])->replace('  ', ' ')->replace(' ', '-');
+
         return [
             'badge' => 'HandCraft',
             'image' => asset('images/explore-'.$i.'.jpg'), // siapin gambarnya
             'rating' => '4.9',
             'reviews' => '59 reviews',
-            'title' => $i === 2 ? "Bali’s Craft Center" : ($i === 5 ? "Bali’s Arjuna’s mask" : "Bali’s Statue Carving"),
+            'title' => $title,
             'products' => '38 Products',
             'views' => '6.2k views',
             'desc' => "At Bali’s Craft, we believe that greatness starts from small, meaningful steps. Established in [Tahun Berdiri], we are a local.",
             'author' => 'Pande Sujana',
-            'url' => '#',
+
+            // ✅ View Detail sekarang ngarah ke profile UMKM
+            'url' => route('umkm.profile', ['slug' => $slug]),
         ];
     })->toArray();
 
@@ -120,3 +129,113 @@ Route::get('/explore-umkm', function () {
 
     return view('pages.explore-umkm-page', compact('categories', 'items', 'page'));
 })->name('explore.umkm');
+
+
+// ✅ Profile UMKM page (STATIC)
+Route::get('/profile-umkm-page', function () {
+
+    // dummy data (nanti bisa diganti DB)
+    $umkm = [
+        'badge' => 'HandCraft',
+        'name' => "Bali’s Craft",
+        'product_count' => '38 Product',
+        'rating' => '4.9',
+        'reviews' => '59 reviews',
+        'owner' => 'Pande Sujana',
+        'owner_role' => 'MSME owner',
+        'avatar' => asset('images/avatar.jpg'),
+        'cover' => asset('images/explore-2.jpg'),
+        'desc' => "Balinese carving is a traditional art unique to Bali that features fine details and culturally valuable motifs, often inspired by nature, mythology, and Balinese Hindu beliefs.",
+        'location' => 'Celuk, Bali',
+        'whatsapp_url' => '#',
+        'established' => '1952',
+        'product_type' => 'Handcraft',
+        'umkm_location' => 'Celuk, Bali',
+    ];
+
+    $story = [
+        'p1' => "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
+        'img1' => asset('images/article-2.jpg'),
+        'p2' => "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...",
+        'img2' => asset('images/article-3.jpg'),
+        'p3' => "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
+    ];
+
+    $popularProduct = [
+        'title' => "Arjuna’s Mask",
+        'price' => "Rp. 300.000",
+        'image' => asset('images/product-1.jpg'),
+        'url' => '#',
+    ];
+
+    $featuredProducts = collect(range(1, 4))->map(fn ($i) => [
+        'title' => "Arjuna’s Mask",
+        'price' => "Rp. 300.000",
+        'image' => asset("images/product-$i.jpg"),
+        'url' => '#',
+    ])->toArray();
+
+    $recommended = [
+        [
+            'badge' => 'Culinary',
+            'image' => asset('images/work-2.jpg'),
+            'rating' => '4.8',
+            'reviews' => '51 reviews',
+            'title' => "Bali’s Modern Food",
+            'products' => '21 Products',
+            'views' => '4.1k views',
+            'desc' => "A short story about local culinary craft and tradition.",
+            'author' => 'Pande Sujana',
+            'url' => '#',
+        ],
+        [
+            'badge' => 'HandCraft',
+            'image' => asset('images/work-1.jpg'),
+            'rating' => '4.9',
+            'reviews' => '59 reviews',
+            'title' => "Bali’s Traditional Craft",
+            'products' => '38 Products',
+            'views' => '6.2k views',
+            'desc' => "A short story about artisans and handmade products.",
+            'author' => 'Pande Sujana',
+            'url' => '#',
+        ],
+        [
+            'badge' => 'HandCraft',
+            'image' => asset('images/explore-2.jpg'),
+            'rating' => '4.9',
+            'reviews' => '59 reviews',
+            'title' => "Bali’s Craft Center",
+            'products' => '38 Products',
+            'views' => '6.2k views',
+            'desc' => "A short story about MSME and cultural values.",
+            'author' => 'Pande Sujana',
+            'url' => '#',
+        ],
+    ];
+
+    $reviews = [
+        [
+            'name' => 'Made Sentosa',
+            'initials' => 'MS',
+            'time' => '2 days ago',
+            'stars' => 5,
+            'text' => 'an effort to connect Balinese artisans with the wider community through a digital platform...',
+            'img1' => asset('images/cta-market.jpg'),
+            'img2' => asset('images/work-1.jpg'),
+            'img3' => asset('images/work-2.jpg'),
+        ],
+    ];
+
+    $mapEmbed = 'https://www.google.com/maps?q=Celuk%20Bali&output=embed';
+
+    return view('pages.profile-umkm-page', compact(
+        'umkm',
+        'story',
+        'popularProduct',
+        'featuredProducts',
+        'recommended',
+        'reviews',
+        'mapEmbed'
+    ));
+})->name('profile-umkm-page');
