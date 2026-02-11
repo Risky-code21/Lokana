@@ -86,3 +86,37 @@ Route::get('/faq', function () {
 
     return view('pages.faq-page', compact('faqs'));
 })->name('faq.page');
+
+
+// Explore UMKM page
+Route::get('/explore-umkm', function () {
+
+    $categories = [
+        'All products',
+        'Culinary',
+        'Mask',
+        'Art tools',
+        'Handcraft',
+    ];
+
+    // dummy produk
+    $items = collect(range(1, 5))->map(function ($i) {
+        return [
+            'badge' => 'HandCraft',
+            'image' => asset('images/explore-'.$i.'.jpg'), // siapin gambarnya
+            'rating' => '4.9',
+            'reviews' => '59 reviews',
+            'title' => $i === 2 ? "Bali’s Craft Center" : ($i === 5 ? "Bali’s Arjuna’s mask" : "Bali’s Statue Carving"),
+            'products' => '38 Products',
+            'views' => '6.2k views',
+            'desc' => "At Bali’s Craft, we believe that greatness starts from small, meaningful steps. Established in [Tahun Berdiri], we are a local.",
+            'author' => 'Pande Sujana',
+            'url' => '#',
+        ];
+    })->toArray();
+
+    // dummy pagination state
+    $page = (int) request('page', 1);
+
+    return view('pages.explore-umkm-page', compact('categories', 'items', 'page'));
+})->name('explore.umkm');
