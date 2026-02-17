@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
 {
@@ -20,13 +21,23 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('user')?->id;
+        // Ambil ID dari route dengan cara yang benar
+        $userId = $this->route('user');
+        
+        // Jika ada ID (update), ambil ID-nya
+        // Jika tidak ada (create), set ke null
+        $userId = $userId ? $userId->id : null;
         
         $rules = [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => [
+                'required',
+                'email',
+                // Gunakan Rule::unique untuk validasi yang lebih baik
+                Rule::unique('users')->ignore($userId),
+            ],
             'role' => 'required|in:admin,user',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // max 2MB
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
 
         // Password hanya required saat create
@@ -48,6 +59,7 @@ class UserRequest extends FormRequest
         return [
             'name.required' => 'Nama lengkap harus diisi.',
             'email.required' => 'Email harus diisi.',
+            'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan.',
             'password.required' => 'Password harus diisi.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
