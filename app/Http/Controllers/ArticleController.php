@@ -2,65 +2,201 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreArticleRequest;
-use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
+use App\Services\ArticleService;
+use App\Models\Category_article;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+    public function __construct(protected ArticleService $articleService) {}
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // 1. TAMPILKAN FORM
     public function create()
     {
-        //
+        // Ambil kategori untuk dropdown
+        $categories = Category_article::all();
+        return view('pages.testing', compact('categories'));
+    }
+
+    // 2. API KHUSUS FROALA (Upload Gambar di dalam Text Editor)
+    public function uploadFromEditor(Request $request)
+    {
+        try {
+            if ($request->hasFile('file')) {
+                // Gunakan logic upload manual/service
+                // Kita simpan di folder 'editor-images' agar terpisah
+                $file = $request->file('file');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('editor-images', $filename, 'public');
+
+                // Froala BUTUH return JSON format: { "link": "url_gambar" }
+                return response()->json([
+                    'link' => asset('storage/' . $path)
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Article error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 3. SIMPAN ARTIKEL UTAMA
+    public function store(Request $request)
+    {
+        // Validasi Input
+        $request->validate([
+            'title'             => 'required|string|max:255',
+            'category_id'       => 'required|exists:category_articles,id',
+            'short_description' => 'required|string|max:500',
+            'content'           => 'required', // Ini HTML dari Froala
+            'thumbnail'         => 'required|image|mimes:jpeg,png,jpg,webp|max:2048', // Thumbnail wajib
+        ]);
+
+        // Siapkan data untuk Service
+        $data = [
+            'title'             => $request->title,
+            'category_id'       => $request->category_id,
+            'short_description' => $request->short_description,
+            'content'           => $request->content,
+            'status'            => 'publish', // Default published
+
+            // Masukkan thumbnail ke array 'medias' agar diproses ArticleService
+            'medias'            => [$request->file('thumbnail')]
+        ];
+
+        try {
+            $this->articleService->createArticle($data);
+            return redirect()->route('article.index')->with('success', 'Artikel berhasil diterbitkan!');
+        } catch (\Exception $e) {
+            Log::error('Article error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal membuat artikel: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    public function index(Request $request)
+    {
+        // Ambil filter dari URL (?search=...&category=...)
+        $filters = $request->only(['search', 'category']);
+
+        // Panggil Service untuk logic filtering & pagination
+        $populerArticle = $this->articleService->getPopularArticle($filters);
+        $articles = $this->articleService->getPublishedArticles($filters);
+        $categoriesArticle = Category_article::all();
+
+        return view('pages.user.article.index', compact('articles', 'populerArticle', 'categoriesArticle'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Halaman Detail Artikel
      */
-    public function store(StoreArticleRequest $request)
+    public function show($slug)
     {
-        //
+        // 1. Ambil detail artikel
+        $article = $this->articleService->getArticleBySlug($slug);
+
+        // 2. Logic Related Article (Category ATAU Author)
+        $relatedArticle = Article::query()
+            ->where('status', 'publish')       // Pastikan hanya artikel publish
+            ->where('id', '!=', $article->id)  // PENTING: Jangan tampilkan artikel yang sedang dibaca saat ini
+            ->where(function ($query) use ($article) {
+                // Logic: Kategori Sama ATAU Author Sama
+                $query->where('category_id', $article->category_id) // Pakai ID lebih cepat daripada whereHas name
+                    ->orWhere('author_id', $article->author->id);   // Atau penulisnya sama
+            })
+            ->inRandomOrder() // Acak urutannya
+            ->limit(3)        // Batasi cuma 3 artikel (biar layout tidak rusak)
+            ->get();          // <--- WAJIB: Eksekusi query menjadi Collection
+
+        // 3. Record View
+        $this->articleService->recordView($article, request()->ip(), request()->userAgent());
+
+        return view('pages.user.article.detail-article', compact('article', 'relatedArticle'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Article $article)
+    public function delete(Article $article)
     {
-        //
+        try {
+            $this->articleService->deleteArticle($article);
+
+            Log::error('Berhasil hapus article');
+            return redirect()->back()->with(['success', 'Berhasil hapus article']);
+        } catch (\Exception $e) {
+            Log::error('delete article error: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Gagal hapus article'])->withInput();
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Article $article)
+    public function edit($slug)
     {
-        //
+        $article = $this->articleService->getArticleBySlug($slug);
+        $categories = Category_article::all();
+        return view('pages.testing-2', compact(['article', 'categories']));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateArticleRequest $request, Article $article)
+    // Tukar posisi: Request dulu, baru Article (Best Practice Laravel)
+    public function update(Request $request, Article $article)
     {
-        //
+        // 1. Validasi
+        $request->validate([
+            'title'             => 'required|string|max:255',
+            'category_id'       => 'required|exists:category_articles,id', // Sesuaikan nama tabel kategori anda
+            'short_description' => 'required|string|max:500',
+            'content'           => 'required',
+
+            // PERBAIKAN 1: Gunakan 'nullable'. 
+            // Artinya: User Boleh kosongkan jika tidak ingin ganti gambar.
+            'thumbnail'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        // 2. Siapkan Data Dasar
+        $data = [
+            'title'             => $request->title,
+            'category_id'       => $request->category_id,
+            'short_description' => $request->short_description,
+            'content'           => $request->content,
+            // Opsional: Jangan hardcode 'publish', gunakan status lama atau input user
+            'status'            => $article->status,
+        ];
+
+        // PERBAIKAN 2: Logika Upload Bersyarat
+        // Hanya masukkan ke array 'medias' JIKA user benar-benar upload file baru
+        if ($request->hasFile('thumbnail')) {
+            $data['medias'] = [$request->file('thumbnail')];
+        }
+
+        try {
+            // Panggil Service
+            // Service kita sebelumnya sudah punya logic: "if (isset($data['medias'])) { upload... }"
+            // Jadi kalau key 'medias' tidak ada, dia aman (gambar lama tidak terhapus).
+            $this->articleService->updateArticle($article, $data);
+
+            return redirect()->route('article.index')->with('success', 'Artikel berhasil diperbarui!');
+        } catch (\Exception $e) {
+            // Gunakan Log facade agar error tercatat di storage/logs/laravel.log
+            \Illuminate\Support\Facades\Log::error('Article update error: ' . $e->getMessage());
+
+            return back()->with('error', 'Gagal update artikel: ' . $e->getMessage())->withInput();
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Article $article)
+    public function like(Article $article)
     {
-        //
+        // 1. Pastikan User Login (Proteksi ganda selain Route)
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        try {
+            // 2. Panggil Service toggleLike
+            $this->articleService->toggleLike($article, Auth::user());
+
+            // 3. Kembalikan JSON (Status & Total Likes baru)
+            // return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -9,10 +9,10 @@ class View extends Model
     protected $table = 'views';
 
     protected $fillable = [
-        'user_id',
         'viewable_id',
         'viewable_type',
         'user_agent',
+        'visitor_id',
         'ip_address'
     ];
 

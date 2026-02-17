@@ -88,6 +88,35 @@ Route::get('/faq', function () {
     return view('pages.faq-page', compact('faqs'));
 })->name('faq.page');
 
+Route::controller(ArticleController::class)->group(function () {
+
+    // Halaman List Artikel
+    Route::get('/articles', 'index')->name('article.index');
+
+    // Halaman Detail (menggunakan Slug)
+    Route::get('/articles/{slug}', 'show')->name('article.detail');
+
+    // Crud sementara article
+    Route::post('articles/post', 'store')->name('articles.store');
+
+    // Proses Simpan Artikel
+    Route::post('/store', 'store')->name('articles.store');
+
+    Route::get('article/edit/{slug}', 'edit')->name('article.edit');
+
+    Route::put('/article/update/{article:slug}', 'update')->name('articles.update');
+    Route::delete('/article/delete/{article:slug}', 'delete')->name('article.delete');
+    Route::post('/articles/{article:slug}/like', 'like')->name('articles.like');
+
+    // API Khusus untuk Froala Editor Upload Image
+    Route::post('/upload-media', 'uploadFromEditor')->name('articles.upload_media');
+});
+
+Route::post('/articles/{article:slug}/comments', [CommentController::class, 'store'])
+    ->name('articles.comments.store');
+
+// Testing fitur admin versi cepat
+Route::get('/testing', [ArticleController::class, 'create'])->name('testing');
 // Explore UMKM page
 Route::get('/explore-umkm', function () {
 

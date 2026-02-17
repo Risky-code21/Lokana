@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasInteractions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -9,14 +10,18 @@ use Illuminate\Support\Str;
 class Article extends Model
 {
     /** @use HasFactory<\Database\Factories\ArticleFactory> */
-    use HasFactory;
+    use HasFactory, HasInteractions;
 
     protected $table = "articles";
 
     protected $fillable = [
         'title',
         'slug',
-        'short_text',
+        'short_description',
+        'content',
+        'author_id',
+        'category_id',
+        'status'
     ];
 
     protected static function boot()
@@ -44,23 +49,21 @@ class Article extends Model
         return $slug;
     }
 
-    public function views()
-    {
-        return $this->morphMany(View::class, 'viewable');
-    }
-
-    public function likes()
-    {
-        return $this->morphMany(View::class, 'likeable');
-    }
 
     public function comments()
     {
-        return $this->morphMany(Comment::class, 'viewable');
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function photos()
+    public function author()
     {
-        return $this->morphMany(Media::class, 'mediable');
+        return $this->belongsTo(User::class, 'author_id');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category_article::class, 'category_id');
+    }
+
+    protected $withCount = ['likes', 'views'];
 }
