@@ -19,19 +19,17 @@ class UmkmProfile extends Model
         'category_id',
         'established_year',
         'short_description',
-        'full_story',
+        'content', //Full Story Masuk sini
         'thumbnail',
         'address',
-        'location_name',
-        'google_maps_link',
         'latitude',
         'longitude',
-        'contact_person',
-        'phone_number',
+        'contact_name',
+        'phone_number',//Link nomor wa example :https://wa.me/nomorhp
         'instagram_link',
         'meta_title',
         'meta_description',
-        'status'
+        'status' 
     ];
 
     protected $casts = [
@@ -64,6 +62,13 @@ class UmkmProfile extends Model
     /**
      * Get the pelaku umkm (owner)
      */
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class, 'umkm_id');
+    }
+
+    
     public function pelakuUmkm()
     {
         return $this->belongsTo(PelakuUmkm::class, 'pelaku_umkm_id');

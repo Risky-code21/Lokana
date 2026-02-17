@@ -19,7 +19,7 @@
         
         <!-- Dashboard -->
         <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->is('admin/dashboard') ? 'bg-blue-900 text-white' : '' }}">
-            <i class="fas fa-home w-5"></i>
+            <x-heroicon-s-home class="size-5 text-heading" />
             <span>Dashboard</span>
         </a>
 
@@ -31,7 +31,7 @@
             <div class="space-y-1 dropdown-parent">
                 <a href="javascript:void(0)" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.msme-profile.*') ? 'bg-blue-900' : '' }}">
                     <div class="flex items-center space-x-3">
-                        <i class="fas fa-store w-5"></i>
+                        <x-heroicon-s-building-storefront class="size-5 text-heading" />
                         <span>MSME Profile</span>
                     </div>
                     <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
@@ -52,7 +52,7 @@
             <div class="space-y-1 dropdown-parent">
                 <a href="javascript:void(0)" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.pelaku-umkm.*') ? 'bg-blue-900' : '' }}">
                     <div class="flex items-center space-x-3">
-                        <i class="fas fa-hands-helping w-5"></i>
+                        <x-heroicon-s-users class="size-5 text-heading" />
                         <span>MSME Artisan</span>
                     </div>
                     <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
@@ -73,7 +73,7 @@
             <div class="space-y-1 dropdown-parent">
                 <a href="{{ route('admin.category-umkm.index') }}" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.category-umkm.*') ? 'bg-blue-900' : '' }}">
                     <div class="flex items-center space-x-3">
-                        <i class="fas fa-tags w-5"></i>
+                         <x-heroicon-s-square-2-stack class="size-5 text-heading"/>
                         <span>Category MSME</span>
                     </div>
                     <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
@@ -89,6 +89,49 @@
                     </a>
                 </div>
             </div>
+
+           <!-- MSME Subscription -->
+            <div class="space-y-1 dropdown-parent">
+                <a href="javascript:void(0)" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.subscription-plans*') || request()->routeIs('admin.subscriptions*') ? 'bg-blue-900' : '' }}">
+                    <div class="flex items-center space-x-3">
+                        <x-heroicon-s-credit-card class="size-5 text-heading" />
+                        <span>MSME Subscription</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
+                </a>
+                
+                <!-- SUB MENU -->
+                <div class="dropdown-content ml-8 space-y-3 hidden {{ request()->routeIs('admin.subscription-plans*') || request()->routeIs('admin.subscriptions*') ? '!block' : '' }}">
+                    
+                    <!-- SECTION 1: PLANS MANAGEMENT -->
+                    <div class="space-y-1">
+                        <div class="text-[10px] uppercase text-gray-500 tracking-wider px-2 font-semibold">PLANS MANAGEMENT</div>
+                        
+                        <a href="{{ route('admin.subscription-plans.index') }}" 
+                        class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors group {{ request()->routeIs('admin.subscription-plans.index') ? 'bg-blue-800' : '' }}">
+                            <i class="fas fa-tags w-4 text-gray-400 group-hover:text-white"></i>
+                            <span class="text-sm">All Plans</span>
+                        </a>
+                        
+                        <a href="{{ route('admin.subscription-plans.create') }}" 
+                        class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors group {{ request()->routeIs('admin.subscription-plans.create') ? 'bg-blue-800' : '' }}">
+                            <i class="fas fa-plus-circle w-4 text-gray-400 group-hover:text-white"></i>
+                            <span class="text-sm">Create New Plan</span>
+                        </a>
+                    </div>
+                    
+                    <!-- SECTION 2: TRANSACTION HISTORY -->
+                    <div class="space-y-1 pt-2 border-t border-gray-700">
+                        <div class="text-[10px] uppercase text-gray-500 tracking-wider px-2 font-semibold">TRANSACTION HISTORY</div>
+                        
+                        <a href="{{ route('admin.subscriptions.index') }}" 
+                        class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors group {{ request()->routeIs('admin.subscriptions.index') ? 'bg-blue-800' : '' }}">
+                            <i class="fas fa-credit-card w-4 text-gray-400 group-hover:text-white"></i>
+                            <span class="text-sm">All Transactions</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- PRODUCTS -->
@@ -99,7 +142,7 @@
             <div class="space-y-1 dropdown-parent">
                 <a href="javascript:void(0)" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.msme-product.*') ? 'bg-blue-900' : '' }}">
                     <div class="flex items-center space-x-3">
-                        <i class="fas fa-box w-5"></i>
+                         <x-heroicon-s-cube class="size-5 text-heading" />
                         <span>MSME Product</span>
                     </div>
                     <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
@@ -125,7 +168,7 @@
             <div class="space-y-1 dropdown-parent">
                 <a href="javascript:void(0)" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.article.*') ? 'bg-blue-900' : '' }}">
                     <div class="flex items-center space-x-3">
-                        <i class="fas fa-newspaper w-5"></i>
+                        <x-heroicon-s-newspaper class="size-5 text-heading" />
                         <span>Article</span>
                     </div>
                     <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
@@ -146,7 +189,7 @@
             <div class="space-y-1 dropdown-parent">
                 <a href="javascript:void(0)" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.article-categories.*') ? 'bg-blue-900' : '' }}">
                     <div class="flex items-center space-x-3">
-                        <i class="fas fa-folder w-5"></i>
+                        <x-heroicon-s-document class="size-5 text-heading" />
                         <span>Article Category</span>
                     </div>
                     <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
@@ -168,11 +211,11 @@
         <div class="pt-2">
             <h3 class="text-xs uppercase text-gray-400 tracking-wider px-3 py-2">REPORT</h3>
             <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.report') ? 'bg-blue-900' : '' }}">
-                <i class="fas fa-chart-pie w-5"></i>
+                <x-heroicon-s-envelope class="size-5 text-heading" />
                 <span>MSME Suggestion</span>
             </a>
             <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.report') ? 'bg-blue-900' : '' }}">
-                <i class="fas fa-chart-pie w-5"></i>
+                 <x-heroicon-s-document-text class="size-5 text-heading" />
                 <span>Report</span>
             </a>
         </div>
@@ -180,13 +223,13 @@
         <!-- SETTINGS -->
         <div class="pt-2">
             <h3 class="text-xs uppercase text-gray-400 tracking-wider px-3 py-2">SETTINGS</h3>
-            <a href="{{ route('admin.settings.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.settings.*') ? 'bg-blue-900' : '' }}">
-                <i class="fas fa-cog w-5"></i>
-                <span>Settings</span>
-            </a>
             <a href="{{ route('admin.users.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.users.*') ? 'bg-blue-900' : '' }}">
-                <i class="fas fa-users w-5"></i>
+                 <x-heroicon-s-identification class="size-5 text-heading" />
                 <span>Users Management</span>
+            </a>
+            <a href="{{ route('admin.settings.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.settings.*') ? 'bg-blue-900' : '' }}">
+                 <x-heroicon-s-cog-8-tooth class="size-5 text-heading" />
+                <span>Settings</span>
             </a>
         </div>
 

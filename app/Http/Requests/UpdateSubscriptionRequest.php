@@ -6,23 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSubscriptionRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true; // GANTI jadi true
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'admin_notes' => 'nullable|string',
+            'verified_at' => 'nullable|date',
+            'verified_by' => 'nullable|exists:users,id'
         ];
     }
 }

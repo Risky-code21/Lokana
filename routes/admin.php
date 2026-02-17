@@ -5,10 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PelakuUmkmController;
 use App\Http\Controllers\Admin\CategoryUmkmController;
 use App\Http\Controllers\Admin\UmkmProfileController;
+use App\Http\Controllers\Admin\SubscriptionPlanController;
+use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\CategoryArticleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingsController;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 Route::middleware(['auth', 'checkrole:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
@@ -30,6 +33,9 @@ Route::middleware(['auth', 'checkrole:admin'])->prefix('admin')->name('admin.')-
         ->name('articles.upload_media');
 });
 =======
+=======
+
+>>>>>>> 2b535ce (feat: subplan & subscription)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     
     // Dashboard
@@ -82,6 +88,25 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         
         // For select dropdown
         Route::get('/select-options', [UmkmProfileController::class, 'getProfiles'])->name('select-options');
+    });
+
+    // ================= SUBSCRIPTION PLANS =================
+    Route::prefix('subscription-plans')->name('subscription-plans.')->group(function () {
+        Route::get('/', [SubscriptionPlanController::class, 'index'])->name('index');
+        Route::get('/create', [SubscriptionPlanController::class, 'create'])->name('create');
+        Route::post('/', [SubscriptionPlanController::class, 'store'])->name('store');
+        Route::get('/{subscriptionPlan}/edit', [SubscriptionPlanController::class, 'edit'])->name('edit');
+        Route::put('/{subscriptionPlan}', [SubscriptionPlanController::class, 'update'])->name('update');
+        Route::get('/{subscriptionPlan}', [SubscriptionPlanController::class, 'show'])->name('show');
+        Route::delete('/{subscriptionPlan}', [SubscriptionPlanController::class, 'destroy'])->name('destroy');
+    });
+
+    // ================= SUBSCRIPTIONS =================
+    Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
+        Route::get('/', [SubscriptionController::class, 'index'])->name('index');
+        Route::get('/{subscription}', [SubscriptionController::class, 'show'])->name('show');
+        Route::put('/{subscription}/verify', [SubscriptionController::class, 'verify'])->name('verify');
+        Route::delete('/{subscription}', [SubscriptionController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('/msme-products', function () {
