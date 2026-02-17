@@ -6,6 +6,7 @@ use App\Http\Controllers\User\CommentController;
 use App\Http\Controllers\User\LandingPageController;
 use App\Http\Controllers\User\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
 
 // Landing page
 Route::get('/',  [LandingPageController::class, 'index'])->name('landing-page');
@@ -232,3 +233,13 @@ Route::get('/profile-umkm-page', function () {
 Route::get('/about-us', function () {
     return view('pages.about-us');
 })->name('about.us');
+<<<<<<< HEAD
+=======
+
+// Route untuk halaman login
+Route::get('/login', [AuthController::class, 'index'])->name('login');
+Route::post('/login', [AuthController::class, 'store']);
+
+// Route untuk logout (pastikan di luar grup middleware guest)
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+>>>>>>> 6d44ca8 (feat: Article category, User Management, Settings, Log Out)

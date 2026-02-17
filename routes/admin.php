@@ -4,6 +4,10 @@ use App\Http\Controllers\Admin\ArticleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PelakuUmkmController;
 use App\Http\Controllers\Admin\CategoryUmkmController;
+use App\Http\Controllers\Admin\UmkmProfileController;
+use App\Http\Controllers\Admin\CategoryArticleController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SettingsController;
 
 <<<<<<< HEAD
 Route::middleware(['auth', 'checkrole:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -45,6 +49,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/{pelaku_umkm}', [PelakuUmkmController::class, 'destroy'])->name('destroy');
         Route::post('/bulk-destroy', [PelakuUmkmController::class, 'bulkDestroy'])->name('bulk-destroy');
     });
+    
     // ================= CATEGORY UMKM =================
     Route::prefix('category-umkm')->name('category-umkm.')->group(function () {
         Route::get('/', [CategoryUmkmController::class, 'index'])->name('index');
@@ -62,11 +67,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/select-options', [CategoryUmkmController::class, 'getCategories'])->name('select-options');
     });
     
-    // Tambahkan di dalam Route::prefix('admin') group
-
-
-// Tambahkan di dalam Route::prefix('admin') group
-
     // ================= UMKM PROFILES =================
     Route::prefix('umkm-profiles')->name('umkm-profiles.')->group(function () {
         Route::get('/', [UmkmProfileController::class, 'index'])->name('index');
@@ -92,21 +92,47 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         return "Articles - Coming Soon";
     })->name('articles.index');
     
-    Route::get('/article-categories', function () {
-        return "Article Categories - Coming Soon";
-    })->name('article-categories.index');
+    // ================= ARTICLE CATEGORIES =================
+    Route::prefix('article-categories')->name('article-categories.')->group(function () {
+        Route::get('/', [CategoryArticleController::class, 'index'])->name('index');
+        Route::get('/create', [CategoryArticleController::class, 'create'])->name('create');
+        Route::post('/', [CategoryArticleController::class, 'store'])->name('store');
+        Route::get('/{category_article}', [CategoryArticleController::class, 'show'])->name('show');
+        Route::get('/{category_article}/edit', [CategoryArticleController::class, 'edit'])->name('edit');
+        Route::put('/{category_article}', [CategoryArticleController::class, 'update'])->name('update');
+        Route::delete('/{category_article}', [CategoryArticleController::class, 'destroy'])->name('destroy');
+        
+        // Bulk delete
+        Route::post('/bulk-destroy', [CategoryArticleController::class, 'bulkDestroy'])->name('bulk-destroy');
+        
+        // For select dropdown
+        Route::get('/select-options', [CategoryArticleController::class, 'getCategories'])->name('select-options');
+    });
     
     Route::get('/reports', function () {
         return "Reports - Coming Soon";
     })->name('reports.index');
     
-    Route::get('/settings', function () {
-        return "Settings - Coming Soon";
-    })->name('settings.index');
+    // ================= SETTINGS =================
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingsController::class, 'index'])->name('index');
+        Route::post('/profile', [SettingsController::class, 'updateProfile'])->name('profile');
+        Route::post('/password', [SettingsController::class, 'updatePassword'])->name('password');
+    });
     
-    Route::get('/users', function () {
-        return "Users Management - Coming Soon";
-    })->name('users.index');
+    // ================= USERS MANAGEMENT =================
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::get('/{user}', [UserController::class, 'show'])->name('show');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [UserController::class, 'update'])->name('update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+        
+        // Bulk delete
+        Route::post('/bulk-destroy', [UserController::class, 'bulkDestroy'])->name('bulk-destroy');
+    });
     
 });
 >>>>>>> 4e89da7 (feat: artisan, msme category)

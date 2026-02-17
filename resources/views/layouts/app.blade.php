@@ -109,7 +109,7 @@
             <!-- Footer -->
             <footer class="bg-white border-t px-4 sm:px-6 py-3">
                 <div class="text-center sm:text-left text-sm text-gray-600">
-                    &copy; {{ date('Y') }} KANA Admin Dashboard. All rights reserved.
+                    &copy; {{ date('D-M-Y') }} Lokana Admin Dashboard. All rights reserved.
                 </div>
             </footer>
         </div>

@@ -144,7 +144,7 @@
 
             <!-- Article Category -->
             <div class="space-y-1 dropdown-parent">
-                <a href="javascript:void(0)" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.article-category.*') ? 'bg-blue-900' : '' }}">
+                <a href="javascript:void(0)" class="dropdown-toggle flex items-center justify-between p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.article-categories.*') ? 'bg-blue-900' : '' }}">
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-folder w-5"></i>
                         <span>Article Category</span>
@@ -152,11 +152,11 @@
                     <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
                 </a>
                 <div class="dropdown-content ml-8 space-y-1 hidden">
-                    <a href="#" class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.article-category.index') ? 'bg-blue-800' : '' }}">
+                    <a href="{{ route('admin.article-categories.index') }}" class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.article-categories.index') ? 'bg-blue-800' : '' }}">
                         <i class="fas fa-list w-4"></i>
                         <span class="text-sm">List</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.article-category.create') ? 'bg-blue-800' : '' }}">
+                    <a href="{{ route('admin.article-categories.create') }}" class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.article-categories.create') ? 'bg-blue-800' : '' }}">
                         <i class="fas fa-plus w-4"></i>
                         <span class="text-sm">Create</span>
                     </a>
@@ -180,11 +180,11 @@
         <!-- SETTINGS -->
         <div class="pt-2">
             <h3 class="text-xs uppercase text-gray-400 tracking-wider px-3 py-2">SETTINGS</h3>
-            <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.settings') ? 'bg-blue-900' : '' }}">
+            <a href="{{ route('admin.settings.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.settings.*') ? 'bg-blue-900' : '' }}">
                 <i class="fas fa-cog w-5"></i>
                 <span>Settings</span>
             </a>
-            <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.users') ? 'bg-blue-900' : '' }}">
+            <a href="{{ route('admin.users.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.users.*') ? 'bg-blue-900' : '' }}">
                 <i class="fas fa-users w-5"></i>
                 <span>Users Management</span>
             </a>
@@ -206,7 +206,7 @@
         </div>
 
         <!-- Log Out -->
-        <form method="POST" action="" class="w-full">
+        <form method="POST" action="{{ route('logout') }}" class="w-full">
             @csrf
             <button type="submit" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-900 transition-colors w-full text-left bg-gray-800">
                 <i class="fas fa-sign-out-alt w-5"></i>
