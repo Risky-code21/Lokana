@@ -11,18 +11,37 @@ class UpdatePelaku_umkmRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
+        $pelakuUmkm = $this->route('pelaku_umkm');
+        
         return [
-            //
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:pelaku_umkms,email,' . $pelakuUmkm->id,
+            'phone' => 'required|string|max:20|unique:pelaku_umkms,phone,' . $pelakuUmkm->id,
+            'address' => 'required|string|max:1000',
+        ];
+    }
+
+    /**
+     * Custom validation messages.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama wajib diisi',
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+            'phone.required' => 'Nomor telepon wajib diisi',
+            'phone.unique' => 'Nomor telepon sudah terdaftar',
+            'address.required' => 'Alamat wajib diisi',
         ];
     }
 }

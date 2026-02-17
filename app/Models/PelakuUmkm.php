@@ -6,7 +6,7 @@ use BadFunctionCallException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pelaku_umkm extends Model
+class PelakuUmkm extends Model
 {
     /** @use HasFactory<\Database\Factories\PelakuUmkmFactory> */
     use HasFactory;
@@ -19,6 +19,11 @@ class Pelaku_umkm extends Model
         'email',
         'phone',
         'address',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime:D M Y H:i',
+        'updated_at' => 'datetime:D M Y H:i',
     ];
 
     public function umkm_profiles()
