@@ -58,11 +58,6 @@
                         
                         <!-- Right Side -->
                         <div class="flex items-center space-x-4">
-                            <!-- Notification Bell -->
-                            <button class="relative p-2 text-gray-600 hover:text-gray-900">
-                                <i class="fas fa-bell text-xl"></i>
-                                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                            </button>
                             
                             <!-- User Avatar -->
                             <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
