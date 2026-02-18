@@ -282,21 +282,25 @@
         overlay.classList.toggle('hidden');
     }
 
-    // Initialize sidebar toggle button
+    // Initialize everything when DOM is ready
     document.addEventListener('DOMContentLoaded', function() {
+        // Toggle button for sidebar
         const toggleButton = document.getElementById('sidebarToggle');
         if (toggleButton) {
             toggleButton.addEventListener('click', toggleSidebar);
         }
 
-        // 1. Auto open dropdown yang memiliki item aktif
+        // 1. Auto open dropdown yang memiliki item aktif (SAAT PERTAMA LOAD)
         document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+            // Cek apakah ada item dengan bg-blue-800 ATAU parentnya (dropdown-toggle) memiliki bg-blue-900
             const hasActiveItem = dropdown.querySelector('.bg-blue-800');
-            if (hasActiveItem) {
+            const parentToggle = dropdown.previousElementSibling;
+            const hasActiveParent = parentToggle && parentToggle.classList.contains('bg-blue-900');
+            
+            if (hasActiveItem || hasActiveParent) {
                 dropdown.classList.remove('hidden');
                 // Juga buka icon chevron
-                const toggleBtn = dropdown.previousElementSibling;
-                const icon = toggleBtn.querySelector('.fa-chevron-down');
+                const icon = parentToggle.querySelector('.fa-chevron-down');
                 if (icon) {
                     icon.classList.add('rotate-180');
                 }
@@ -315,18 +319,15 @@
                 // Cek apakah dropdown ini sedang terbuka
                 const isCurrentlyOpen = !dropdown.classList.contains('hidden');
                 
-                // Tutup SEMUA dropdown lainnya (kecuali yang punya item aktif)
+                // Tutup SEMUA dropdown lainnya (tanpa kecuali)
                 document.querySelectorAll('.dropdown-content').forEach(otherDropdown => {
                     if (otherDropdown !== dropdown) {
-                        const hasActiveItem = otherDropdown.querySelector('.bg-blue-800');
-                        if (!hasActiveItem) {
-                            otherDropdown.classList.add('hidden');
-                            // Reset icon untuk dropdown yang ditutup
-                            const otherToggle = otherDropdown.previousElementSibling;
-                            const otherIcon = otherToggle.querySelector('.fa-chevron-down');
-                            if (otherIcon) {
-                                otherIcon.classList.remove('rotate-180');
-                            }
+                        otherDropdown.classList.add('hidden');
+                        // Reset icon untuk dropdown yang ditutup
+                        const otherToggle = otherDropdown.previousElementSibling;
+                        const otherIcon = otherToggle?.querySelector('.fa-chevron-down');
+                        if (otherIcon) {
+                            otherIcon.classList.remove('rotate-180');
                         }
                     }
                 });
@@ -342,31 +343,28 @@
             });
         });
 
-        // 3. Handler untuk link di dalam dropdown - TIDAK menutup dropdown
+        // 3. Handler untuk link di dalam dropdown
         document.querySelectorAll('.dropdown-content a').forEach(link => {
             link.addEventListener('click', function(e) {
-                // Tidak perlu stopPropagation, biarkan navigasi bekerja
-                // Dropdown tetap terbuka karena kita tidak menutupnya di event listener lain
+                // Biarkan navigasi berjalan normal
+                // Tidak perlu melakukan apa-apa
             });
         });
 
-        // 4. Close dropdowns hanya ketika klik di luar sidebar COMPLETELY
+        // 4. Close dropdowns ketika klik di luar sidebar
         document.addEventListener('click', function(e) {
             // Cek jika klik di luar sidebar sama sekali
             const clickedInsideSidebar = e.target.closest('#sidebar');
             
             if (!clickedInsideSidebar) {
-                // Hanya tutup dropdown yang TIDAK memiliki item aktif
+                // Tutup SEMUA dropdown
                 document.querySelectorAll('.dropdown-content').forEach(dropdown => {
-                    const hasActiveItem = dropdown.querySelector('.bg-blue-800');
-                    if (!hasActiveItem) {
-                        dropdown.classList.add('hidden');
-                        // Reset icon
-                        const toggleBtn = dropdown.previousElementSibling;
-                        const icon = toggleBtn.querySelector('.fa-chevron-down');
-                        if (icon) {
-                            icon.classList.remove('rotate-180');
-                        }
+                    dropdown.classList.add('hidden');
+                    // Reset icon
+                    const toggleBtn = dropdown.previousElementSibling;
+                    const icon = toggleBtn?.querySelector('.fa-chevron-down');
+                    if (icon) {
+                        icon.classList.remove('rotate-180');
                     }
                 });
             }

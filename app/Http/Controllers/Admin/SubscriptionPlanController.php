@@ -9,10 +9,28 @@ use Illuminate\Support\Str;
 
 class SubscriptionPlanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $plans = SubscriptionPlan::latest()->paginate(10);
-        return view('pages.admin.subscription_plans.index', compact('plans'));
+        $query = SubscriptionPlan::query();
+        
+        // Search by name
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+        
+        $plans = $query->latest()->paginate(10);
+        
+        // Stats untuk cards
+        $stats = [
+            'total' => SubscriptionPlan::count(),
+            'active' => SubscriptionPlan::count(), // bisa dimodifikasi kalo ada kolom is_active
+            'total_transactions' => Subscription::count(),
+            'revenue' => Subscription::whereNotNull('verified_at')->sum('total_amount')
+        ];
+        
+        // Kalo pake withQueryString() biar search tetap kepake di pagination
+        return view('pages.admin.subscription_plans.index', compact('plans', 'stats'))
+            ->with('search', $request->search);
     }
 
     public function create()

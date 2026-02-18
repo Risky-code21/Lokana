@@ -9,13 +9,45 @@ use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $subscriptions = Subscription::with(['umkm', 'plan', 'verifiedBy'])
-            ->latest()
-            ->paginate(15);
-            
-        return view('pages.admin.subscriptions.index', compact('subscriptions'));
+        $query = Subscription::with(['umkm', 'plan', 'verifiedBy']);
+
+        // Filter by status
+        if ($request->status == 'pending') {
+            $query->whereNull('verified_at');
+        } elseif ($request->status == 'verified') {
+            $query->whereNotNull('verified_at');
+        } elseif ($request->status == 'expired') {
+            $query->whereNotNull('expires_at')->where('expires_at', '<', now());
+        }
+
+        // SEARCH BY UMKM NAME OR EMAIL
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('umkm', function($subQuery) use ($search) {
+                    $subQuery->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('email', 'like', '%' . $search . '%');
+                })->orWhereHas('plan', function($subQuery) use ($search) {
+                    $subQuery->where('name', 'like', '%' . $search . '%');
+                });
+            });
+        }
+
+        $subscriptions = $query->latest()->paginate(15);
+
+        // Stats
+        $stats = [
+            'total' => Subscription::count(),
+            'pending' => Subscription::whereNull('verified_at')->count(),
+            'verified' => Subscription::whereNotNull('verified_at')->count(),
+            'revenue' => Subscription::whereNotNull('verified_at')->sum('total_amount')
+        ];
+
+        return view('pages.admin.subscriptions.index', compact('subscriptions', 'stats'))
+            ->with('search', $request->search)
+            ->with('status', $request->status);
     }
 
     public function show(Subscription $subscription)
