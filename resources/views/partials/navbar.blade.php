@@ -6,7 +6,7 @@
     class="fixed top-0 left-0 w-full bg-white border-b border-gray-200 z-50 transition-all duration-300">
 
     <div
-        class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-56 h-20 flex items-center justify-between lg:justify-normal">
+        class="max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 h-20 flex items-center justify-between lg:justify-normal">
 
         {{-- 1. LOGO --}}
         <div class="w-fit md:w-56">
@@ -20,9 +20,10 @@
         <nav class="hidden lg:flex mx-auto items-center gap-8">
             <a href="{{ route('register.index') }}"
                 class="text-gray-600 hover:text-primary-main font-medium transition">Home</a>
-            <a href="{{ route('register.index') }}"
+            <a href="{{ route('article.index') }}"
                 class="text-gray-600 hover:text-primary-main font-medium transition">Article</a>
             <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">Explore</a>
+            <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">FAQ</a>
             <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">About us</a>
         </nav>
 
@@ -136,9 +137,10 @@
         <div class="p-4 space-y-6">
             <a href="{{ route('register.index') }}"
                 class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Home</a>
-            <a href="{{ route('register.index') }}"
+            <a href="{{ route('article.index') }}"
                 class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Article</a>
             <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Explore</a>
+            <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">FAQ</a>
             <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">About
                 us</a>
         </div>

@@ -20,7 +20,7 @@
         <span class="text-gray-400">{{ Str::limit($article->title, 50) }}</span>
     </div> --}}
 
-    <article class="w-full mt-28  px-4 sm:px-8 md:px-12 lg:px-56">
+    <article class="w-full max-w-8xl mx-auto mt-28  px-4 sm:px-8 md:px-12 lg:px-56">
 
         {{-- Category article --}}
         @if ($article->category)
@@ -90,7 +90,7 @@
     </article>
 
     {{-- Related article --}}
-    <section class="w-full px-4 sm:px-8 md:px-12 lg:px-56 space-y-8 my-12">
+    <section class="w-full max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 space-y-8 my-12">
         <h2 class="text-4xl font-bold text-heading">Related article</h2>
         {{-- Ambil data article yang ada, jika tidak tampilkan empty state --}}
         @if ($relatedArticle->isNotEmpty())
@@ -106,7 +106,7 @@
     </section>
 
     {{-- Komentar --}}
-    <section class="w-full px-4 sm:px-8 md:px-12 lg:px-56 mb-18 bg-white" x-data="{
+    <section class="w-full max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mb-18 bg-white" x-data="{
         {{-- Submit komentar dengan http request json --}}
         submitKomentar(event) {
             const form = event.target;

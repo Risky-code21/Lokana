@@ -16,7 +16,7 @@
     {{-- 2. MAIN CONTENT WRAPPER --}}
     {{-- Gunakan 'flex-grow' agar footer terdorong ke bawah jika konten sedikit --}}
     @if (isset($articles) && isset($populerArticle))
-        <main class="flex-grow container mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mt-28 mb-8 space-y-6">
+        <main class="flex-grow max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mt-28 mb-8 space-y-6">
 
             {{-- A. CATEGORY PILLS (Scrollable on Mobile) --}}
             {{-- overflow-x-auto: Agar bisa di-swipe kiri-kanan di HP --}}
@@ -54,7 +54,8 @@
                 <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch">
 
                     {{-- Image (Kiri/Atas) --}}
-                    <div class="w-full lg:w-1/2 h-64 md:h-80 lg:h-auto relative rounded-card overflow-hidden shadow-sm">
+                    <div
+                        class="w-full lg:w-1/2 lg:min-w-1/2 h-64 md:h-80 lg:h-auto relative rounded-card overflow-hidden shadow-sm">
 
                         {{-- Image Tag --}}
                         {{-- 
@@ -127,7 +128,7 @@
                 {{-- Ambil data article yang ada, jika tidak tampilkan empty state --}}
                 @if ($articles->isNotEmpty())
                     {{-- Grid System: 1 kolom (HP), 2 kolom (Tablet), 3 kolom (Laptop) --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         @foreach ($articles as $article)
                             {{-- Pakai titik dua (:) dan hapus kurung kurawal --}}
                             <x-article-card :article="$article" />
