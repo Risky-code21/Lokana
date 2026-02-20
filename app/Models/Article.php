@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-use App\Traits\HasInteractions;
+use App\Traits\HasLike;
+use App\Traits\HasMedia;
+use App\Traits\HasView;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -10,7 +12,7 @@ use Illuminate\Support\Str;
 class Article extends Model
 {
     /** @use HasFactory<\Database\Factories\ArticleFactory> */
-    use HasFactory, HasInteractions;
+    use HasFactory, HasMedia, HasView, HasLike;
 
     protected $table = "articles";
 

@@ -105,8 +105,31 @@
         @endif
     </section>
 
-    {{-- Koemntar --}}
-    <section class="w-full px-4 sm:px-8 md:px-12 lg:px-56 mb-18 bg-white">
+    {{-- Komentar --}}
+    <section class="w-full px-4 sm:px-8 md:px-12 lg:px-56 mb-18 bg-white" x-data="{
+        {{-- Submit komentar dengan http request json --}}
+        submitKomentar(event) {
+            const form = event.target;
+            const formData = new FormData(form);
+    
+            fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        form.reset(); // Kosongkan text area
+                        this.isReplying = false; // Tutup form balas (jika itu form balasan)
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }">
 
         <div class="mb-10">
             {{-- JUDUL SECTION (Dynamic Count) --}}
@@ -119,7 +142,9 @@
             {{-- FORM INPUT KOMENTAR --}}
             @auth
                 {{-- 1. Bungkus dengan FORM & arahkan ke Route Store --}}
-                <form action="{{ route('articles.comments.store', $article->slug) }}" method="POST" class="relative">
+                <form @submit.prevent="submitKomentar"
+                    action="{{ route('comments.store', ['type' => 'article', 'slug' => $article->slug]) }}" method="POST"
+                    class="relative">
                     @csrf
 
                     <textarea name="content"
@@ -144,28 +169,116 @@
             @endauth
         </div>
 
-        {{-- LIST KOMENTAR --}}
-        <div class="space-y-8 mb-10">
-            {{-- 2. Looping Component Komentar --}}
-            @forelse($article->comments as $comment)
-                {{-- Panggil Component yang sudah dibuat & Kirim Slug untuk Form Reply --}}
-                <x-comment-bubble :comment="$comment" :articleSlug="$article->slug" />
-            @empty
-                <p class="text-center text-gray-400 italic py-4">Be the first to comment!</p>
-            @endforelse
-        </div>
+        {{-- Container Utama Komentar dengan State Alpine --}}
+        {{-- Container Utama Komentar --}}
+        <section class="mt-12" x-data="{
+            {{-- Insiassi page --}}
+            page: 1,
+                {{-- Cek apakah comments saat ini diinsiasi dengna pagination --}}
+            hasMore: {{ $comments->hasMorePages() ? 'true' : 'false' }},
+        
+                {{-- Stata loading --}}
+            isLoading: false,
+        
+                currentViewerId: {{ auth()->id() ?? 'null' }},
+        
+                init() {
+                    window.Echo.channel('article.{{ $article->slug }}')
+                        .listen('CommentPosted', (event) => {
+                            document.getElementById('comments-list-container')
+                                .insertAdjacentHTML('afterbegin', event.html);
+                        });
+                },
+        
+                {{-- Function untuk loadmore atau untuk menambah jumalh komentar yang ada di setiap view detail article, nantinya disetiap load akan ditambah 5 data komentar --}}
+            loadMore() {
+                    {{-- Mengembalikan function dengan mengembalikan isloading menjadi false, untuk menghindari double klik --}}
+                    if (this.isLoading) return;
+        
+                    {{-- Jika isloading false, maka baris pertama return tadi akan diskip dan langsung mengarah ke sini --}}
+                    this.isLoading = true;
+                    this.page++;
+        
+                    {{-- Tangakp request yang ada pada page ini, karena data yang masuk menggunakan pagination yang akan memuat link seperti pada syntax fetch dibawah --}}
+                    fetch(`?page=${this.page}`, {
+                        {{-- Headeres request --}}
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            {{-- Request akan selalu menerima json untuk responsenya --}} 'Accept': 'application/json'
+                        }
+                    })
+                    {{-- Olah response yang didapat en --}}
+                        .then(response => response.json())
+                    {{-- Mengolah data response json tadi menjadi sebuah element html yang siap di inject ke container komentar --}}
+                        .then(data => {
+                            {{-- Menginsiasi container data yang di load dengan identitas pagination, misal kita mengambil data di halaman dua pagination, maka id akan menjadi comment-page-2, ini berguna untuk function show less nantinya --}}
+                            const pageWrapper = `<div id='comment-page-${this.page}' x-data x-transition>${data.html}</div>`;
+        
+                            document.getElementById('comments-list-container')
+                                .insertAdjacentHTML('beforeend', pageWrapper);
+        
+                            this.hasMore = data.hasMore;
+                        })
+                    {{-- Menangkap error, dan menggembalikannya melalui console log --}}
+                        .catch(error => console.error('Error:', error))
+        
+                    {{-- Menggembalikan state loading menjadi false kembali --}}
+                        .finally(() => { this.isLoading = false; });
+                },
+        
+                showLess() {
+                    {{-- Jika halaman pagination hanya 1 batalkan showless ini, karena minimal data yang tampil adalah 5 atau 1 halaman pagination --}}
+                    if (this.page <= 1);
+        
+        
+                    {{-- Untuk mencari tingkatan no paling tinggi dari container comment dari penambahan atau yang sudah ada sebelumnya --}}
+                    const lastPage = document.getElementById(`comment-page-${this.page}`);
+                    if (lastPage) {
+                        lastPage.remove();
+                    }
+        
+                    {{-- Mengurangi state page agar dapat mendapatkan container dengan no yang lebih rendah --}}
+                    this.page--;
+        
+                    {{-- Stata yang digunakan untuk menyembunyikan tombol load more --}}
+                    this.hasMore = true;
+                }
+        }">
 
-        {{-- Load More (Biarkan statis dulu sesuai request) --}}
-        @if ($article->comments->count() > 5)
-            <button class="btn-primary text-sm">
-                Load more
-            </button>
-        @endif
+            {{-- Daftar komentar --}}
+            <div id="comments-list-container">
+                {{-- Load halaman 1 sebagai insiasi halaman --}}
+                @forelse($comments as $comment)
+                    <x-comment-bubble :comment="$comment" :articleSlug="$article->slug" />
+                @empty
+                    <div class="text-center text-gray-400 py-8 text-sm">Belum ada komentar.</div>
+                @endforelse
+            </div>
 
+            {{-- CONTAINER TOMBOL LOAD MORE & SHOW LESS --}}
+            <div class="mt-8 flex justify-center gap-4">
+
+                {{-- Tombol show less (Hanya muncul jika halaman > 1) --}}
+                {{-- Akan muncul ketika ada lebih dari 1 pagination yang sudah terload --}}
+                <button x-show="page > 1" @click="showLess()" style="display: none;"
+                    class="px-6 py-2 text-gray-500 hover:text-red-500 text-sm font-semibold transition-colors">
+                    Show Less
+                </button>
+
+                {{-- Tombol load more --}}
+                {{-- Akan muncul jika terdapat lebih dari 2 halaman dari pagination data komentar --}}
+                <button x-show="hasMore" @click="loadMore()" :disabled="isLoading" style="display: none;"
+                    class="btn-primary text-sm">
+                    <x-heroicon-s-arrow-path x-show="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-current" />
+                    <span x-text="isLoading ? 'Loading...' : 'Load More Comments'"></span>
+                </button>
+
+            </div>
+        </section>
     </section>
 
     @include('partials.footer')
-
+    @stack('scripts')
 </body>
 
 </html>

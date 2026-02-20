@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Services\ArticleService;
 use App\Models\Category_article;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -92,12 +93,20 @@ class ArticleController extends Controller
     /**
      * Halaman Detail Artikel
      */
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
-        // 1. Ambil detail artikel
-        $article = $this->articleService->getArticleBySlug($slug);
+        // 1. Ambil data artikel
+        $article = Article::where('slug', $slug)->firstOrFail();
 
-        // 2. Logic Related Article (Category ATAU Author)
+        // 2. Ambil komentar khusus PARENT saja (parent_id = null)
+        // Gunakan paginate(5) agar diload 5 per 5
+        $comments = Comment::with(['user', 'replies.user']) // Eager load biar cepat
+            ->where('commentable_type', 'article') // Asumsi pakai polymorphic
+            ->where('commentable_id', $article->id)
+            ->whereNull('parent_id') // Kunci utama: Hanya Induk
+            ->latest()
+            ->paginate(5);
+
         $relatedArticle = Article::query()
             ->where('status', 'publish')       // Pastikan hanya artikel publish
             ->where('id', '!=', $article->id)  // PENTING: Jangan tampilkan artikel yang sedang dibaca saat ini
@@ -110,10 +119,28 @@ class ArticleController extends Controller
             ->limit(3)        // Batasi cuma 3 artikel (biar layout tidak rusak)
             ->get();          // <--- WAJIB: Eksekusi query menjadi Collection
 
-        // 3. Record View
-        $this->articleService->recordView($article, request()->ip(), request()->userAgent());
+        // 3. LOGIKA SAKTI AJAX: 
+        // Jika request datang dari tombol "Load More" (bukan dari ngetik URL biasa)
+        if ($request->ajax()) {
+            $html = '';
 
-        return view('pages.user.article.detail-article', compact('article', 'relatedArticle'));
+            // Looping komentar baru, lalu render component 'comment-item' menjadi string HTML
+            foreach ($comments as $comment) {
+                $html .= view('components.comment-bubble', [
+                    'comment' => $comment,
+                    'articleSlug' => $article->slug
+                ])->render();
+            }
+
+            // Kembalikan dalam bentuk JSON
+            return response()->json([
+                'html' => $html,
+                'hasMore' => $comments->hasMorePages() // true jika masih ada halaman berikutnya
+            ]);
+        }
+
+        // 4. Jika load halaman pertama kali (bukan AJAX), render view detail artikel biasa
+        return view('pages.user.article.detail-article', compact('article', 'comments', 'relatedArticle'));
     }
 
     public function delete(Article $article)

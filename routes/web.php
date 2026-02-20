@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\User\ArticleController;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\User\LikeController;
 use App\Http\Controllers\User\CommentController;
 use Illuminate\Support\Facades\Route;
@@ -88,6 +88,7 @@ Route::get('/faq', function () {
     return view('pages.faq-page', compact('faqs'));
 })->name('faq.page');
 
+
 Route::controller(ArticleController::class)->group(function () {
 
     // Halaman List Artikel
@@ -112,10 +113,37 @@ Route::controller(ArticleController::class)->group(function () {
     Route::post('/upload-media', 'uploadFromEditor')->name('articles.upload_media');
 });
 
-Route::post('/articles/{article:slug}/comments', [CommentController::class, 'store'])
-    ->name('articles.comments.store');
+// Route untuk fitur komentar
+// Pengguna yang ingin berkomentar atau mereply suatu komentar harus lah pengguna yang sudah terautentikas
+// Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
+// Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
+Route::middleware('auth')->prefix('comments')->name('comments.')->controller(CommentController::class)->group(function () {
+
+    // Upload komentar
+    Route::post('/{type}/{slug}', 'store')
+        ->name('store');
+
+    // Update komentar
+    Route::put('/{comment}', 'update')
+        ->name('update');
+
+    // Delete Komentar
+    Route::delete('/{comment}', 'destroy')
+        ->name('destroy');
+});
+
+// Route untuk fitur like 
+// Pengguna yang ingin meemberikan like harus login terlebih dahulu
+// Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
+// Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
+Route::middleware('auth')->prefix('likes')->name('likes.')->controller(LikeController::class)->group(function () {
+
+    Route::post('/{type}/{slug}', 'toggle')
+        ->name('toggle');
+});
 
 // Testing fitur admin versi cepat
+// Untuk sekarang ini hanya untuk testing CRUD saja
 Route::get('/testing', [ArticleController::class, 'create'])->name('testing');
 // Explore UMKM page
 Route::get('/explore-umkm', function () {
