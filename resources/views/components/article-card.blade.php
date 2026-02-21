@@ -1,5 +1,12 @@
 @props(['article'])
 
+
+@php
+    // Function untuk cek apakah user yang login saat ini sudah melakukan like pada suatu komentar yang ada disini, entah komentar replay ataupun komentar utama
+    $smartAvatar = fn($model) => $model->author->avatar ??
+        'https://ui-avatars.com/api/?name=' . urlencode($model->author->name);
+
+@endphp
 {{-- 
     WRAPPER CARD 
     - Gunakan w-full (ikut grid parent)
@@ -73,7 +80,7 @@
 
                 <div class="size-10 overflow-hidden rounded-full">
 
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($article->author->name) }}" alt=""
+                    <img src="{{ $smartAvatar($article) }}" alt="{{ $article->author->name }}"
                         class="size-full object-cover object-center" />
 
                 </div>
@@ -84,7 +91,8 @@
 
                     <p class="text-primary-main leading-none">{{ $article->author->name }}</p>
 
-                    <p class="text-slate-400">Admin lokana</p>
+                    <p class="text-slate-400">
+                        {{ $article->author->role == 'admin' ? 'Lokana admin' : 'Admin testing' }}</p>
 
                 </div>
 

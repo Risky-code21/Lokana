@@ -1,3 +1,7 @@
+    @props([
+        'description' => '',
+    ])
+
     <div x-data="{ openAuthModal: false }" @open-auth-modal.window="openAuthModal = true" x-show="openAuthModal"
         style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
         aria-modal="true">
@@ -28,8 +32,8 @@
                             <h1 class="text-3xl font-bold leading-6 text-gray-900" id="modal-title">Authentication
                                 required</h1>
                             <div class="mt-2">
-                                <p class="text-sm text-gray-500 leading-relaxed">
-                                    You need to log in to your account first to like this article
+                                <p class="text-sm mx-auto sm:max-w-3/5 text-gray-500 leading-relaxed">
+                                    {{ $description }}
                                 </p>
                             </div>
                         </div>
@@ -38,12 +42,12 @@
 
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
                     <a href="{{ route('login.index') }}"
-                        class="inline-flex w-full justify-center rounded-lg bg-primary-main px-4 py-2 text-sm font-bold text-white shadow-sm hover:opacity-90 sm:w-auto transition-opacity">
-                        Login Sekarang
+                        class="inline-flex w-full justify-center rounded-lg bg-primary-main p-4 text-sm font-bold text-white hover:opacity-90 sm:w-auto transition-opacity">
+                        Sign In
                     </a>
                     <button @click="openAuthModal = false" type="button"
-                        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors">
-                        Batal
+                        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white p-4 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors">
+                        Cancel
                     </button>
                 </div>
             </div>

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/favicon_lokana.png') }}">
     <title>{{ config('app.name') }} - Article</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -16,7 +17,7 @@
     {{-- 2. MAIN CONTENT WRAPPER --}}
     {{-- Gunakan 'flex-grow' agar footer terdorong ke bawah jika konten sedikit --}}
     @if (isset($articles) && isset($populerArticle))
-        <main class="flex-grow max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mt-28 mb-8 space-y-6">
+        <main class="flex-grow w-full max-w-[1600px] mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mt-28 mb-8 space-y-6">
 
             {{-- A. CATEGORY PILLS (Scrollable on Mobile) --}}
             {{-- overflow-x-auto: Agar bisa di-swipe kiri-kanan di HP --}}
@@ -113,11 +114,14 @@
                             </div>
                             <div class="space-y-0.5">
                                 <p class="text-primary-main leading-none">{{ $populerArticle->author->name }}</p>
-                                <p class="text-slate-400">Admin lokana</p>
+                                <p class="text-slate-400">
+                                    {{ $populerArticle->author->role == 'admin' ? 'Lokana admin' : 'Admin testing' }}
+                                </p>
                             </div>
                         </div>
 
-                        <a href="" class="btn-primary block px-8 text-center w-fit">Read more</a>
+                        <a href="{{ route('article.detail', ['slug' => $populerArticle->slug]) }}"
+                            class="btn-primary block px-8 text-center w-fit">Read more</a>
                     </div>
                 </div>
             </section>

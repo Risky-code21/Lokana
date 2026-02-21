@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {{-- Dinamis Title --}}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/favicon_lokana.png') }}">
     <title>{{ config('app.name') }} - {{ $article->title }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -12,12 +12,12 @@
 <body class="bg-white text-gray-800 antialiased flex flex-col min-h-screen">
 
     {{-- Pop up auth required --}}
-    <x-auth-required-modal />
+    <x-auth-required-modal description='You need to log in to your account first to like this article' />
 
     @include('partials.navbar')
 
     {{-- Main content article --}}
-    <article class="w-full max-w-8xl mx-auto mt-28  px-4 sm:px-8 md:px-12 lg:px-56">
+    <article class="w-full max-w-[1600px] mx-auto mt-28  px-4 sm:px-8 md:px-12 lg:px-56">
 
         {{-- Category article --}}
         @if ($article->category)
@@ -41,7 +41,7 @@
             </div>
             <div class="space-y-0.5">
                 <p class="text-primary-main leading-none">{{ $article->author->name }}</p>
-                <p class="text-slate-400">{{ $article->author->role == 'admin' ? 'Lokana admin' : '' }}</p>
+                <p class="text-slate-400">{{ $article->author->role == 'admin' ? 'Lokana admin' : 'Admin testing' }}</p>
             </div>
         </div>
 
@@ -106,7 +106,7 @@
     </article>
 
     {{-- Related article --}}
-    <section class="w-full max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 space-y-8 my-12">
+    <section class="w-full max-w-[1600px] mx-auto px-4 sm:px-8 md:px-12 lg:px-56 space-y-8 my-12">
         <h2 class="text-4xl font-bold text-heading">Related article</h2>
         {{-- Ambil data article yang ada, jika tidak tampilkan empty state --}}
         @if ($relatedArticle->isNotEmpty())
@@ -122,7 +122,8 @@
     </section>
 
     {{-- Komentar --}}
-    <section class="w-full max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mb-18 bg-white" x-data="commentSection('{{ $article->slug }}', {{ $comments->hasMorePages() ? 'true' : 'false' }}, {{ auth()->id() ?? 'null' }})">
+    <section class="w-full max-w-[1600px] mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mb-18 bg-white"
+        x-data="commentSection('{{ $article->slug }}', {{ $comments->hasMorePages() ? 'true' : 'false' }}, {{ auth()->id() ?? 'null' }})">
 
         <div class="mb-10">
             {{-- Judul dan jumlah komentar (Dynamic Count) --}}

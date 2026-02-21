@@ -15,6 +15,10 @@
 
 @endphp
 
+<x-delete-modal title="Delete Comment?"
+    description="Are you sure you want to delete this comment? It will be gone forever!"
+    buttonText="Yes, Delete Comment" />
+
 <div x-data="commentItem('{{ $comment->content }}')" class="space-y-4 mb-6" id="comment-{{ $comment->id }}" class="space-y-4 mb-6"
     id="comment-{{ $comment->id }}">
 
@@ -86,8 +90,11 @@
                             <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
                                 {{-- Handle konfirmasi sebelum request di submit --}} onsubmit="return confirm('Delete?')">
                                 @csrf @method('DELETE')
-                                <button
-                                    class="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50">Delete</button>
+                                <button type="button"
+                                    @click="$dispatch('open-delete-modal', { url: '{{ route('comments.destroy', $comment->id) }}' }); open = false"
+                                    class="block w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50">
+                                    Delete
+                                </button>
                             </form>
                         </div>
                     </div>

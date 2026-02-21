@@ -9,7 +9,7 @@
         class="max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 h-20 flex items-center justify-between lg:justify-normal">
 
         {{-- 1. LOGO --}}
-        <div class="w-fit md:w-56">
+        <div class="w-fit md:w-48">
             <a href="{{ route('register.index') }}" class="flex-shrink-0 z-50">
                 <img class="h-10 w-auto object-contain" src="{{ asset('images/logo_lokana_coklat.webp') }}"
                     alt="Lokana Logo" />
@@ -18,7 +18,7 @@
 
         {{-- 2. DESKTOP NAVIGATION (Tengah) --}}
         <nav class="hidden lg:flex mx-auto items-center gap-8">
-            <a href="{{ route('register.index') }}"
+            <a href="{{ route('landing-page') }}"
                 class="text-gray-600 hover:text-primary-main font-medium transition">Home</a>
             <a href="{{ route('article.index') }}"
                 class="text-gray-600 hover:text-primary-main font-medium transition">Article</a>
@@ -131,11 +131,11 @@
 
     {{-- 5. MOBILE MENU DROPDOWN --}}
     <div x-show="mobileOpen" x-transition
-        class="lg:hidden absolute top-20 left-0 w-full sm:px-8 md:px-12 bg-white border-b shadow-lg flex flex-col max-h-[80vh] overflow-y-auto"
+        class="lg:hidden absolute top-20 left-0 w-full sm:px-8 md:px-12 bg-white shadow-lg flex flex-col max-h-[80vh] overflow-y-auto"
         style="display: none;">
 
         <div class="p-4 space-y-6">
-            <a href="{{ route('register.index') }}"
+            <a href="{{ route('landing-page') }}"
                 class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Home</a>
             <a href="{{ route('article.index') }}"
                 class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Article</a>
@@ -150,9 +150,10 @@
         <div class="">
             @guest
                 {{-- Mobile: Tombol Sign In/Up Stack --}}
-                <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-3 p-4">
                     <a href="{{ route('register.index') }}"
-                        class="w-full text-center py-3 rounded-btn text-white bg-primary-main font-medium">Sign In</a>
+                        class="w-full text-center py-3 rounded-btn text-white hover:bg-state-hover bg-primary-light hover:opacity-90 font-medium">Sign
+                        In</a>
                     <a href="{{ route('register.index') }}"
                         class="w-full text-center py-3 rounded-btn border border-primary-main text-primary-main font-medium">Sign
                         Up</a>
@@ -168,8 +169,8 @@
                                 class="size-full object-cover">
                         </div>
                         <div>
-                            <p class="font-bold text-gray-800">{{ Auth::user()->name }}</p>
-                            <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
+                            <p class="font-bold text-gray-800 mb-0">{{ Auth::user()->name }}</p>
+                            <p class="text-xs text-gray-500 mb-0">{{ Auth::user()->email }}</p>
                         </div>
                     </div>
 
@@ -177,7 +178,7 @@
                     <a href="#" class="block text-sm text-gray-600 py-1 hover:text-primary-main">Settings</a>
 
                     <form method="POST" action="{{ route('register.index') }}"
-                        class="pt-2 border-t border-gray-200 mt-2">
+                        class="py-2 border-t border-gray-200 mt-2">
                         @csrf
                         <button type="submit" class="w-full text-left text-sm text-red-600 font-medium">Sign Out</button>
                     </form>
