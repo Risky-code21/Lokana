@@ -128,7 +128,7 @@ class ArticleController extends Controller
             foreach ($comments as $comment) {
                 $html .= view('components.comment-bubble', [
                     'comment' => $comment,
-                    'articleSlug' => $article->slug
+                    'modelSlug' => $article->slug
                 ])->render();
             }
 

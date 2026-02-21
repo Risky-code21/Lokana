@@ -1,5 +1,5 @@
-{{-- Props untuk mengambil data dari model comments yang masuk dan data dari article slug --}}
-@props(['comment', 'articleSlug'])
+{{-- Props untuk mengambil data dari model comments yang masuk dan data dari model slug --}}
+@props(['comment', 'modelSlug'])
 
 @php
     // Sistem untuk fallback user yang sebelumnya dibuat saat belum berisi casting avatar pada modelnya
@@ -15,37 +15,8 @@
 
 @endphp
 
-<div x-data="{
-    {{-- Inisiasi kebetuhan komponent dengan alpine js --}}
-    isReplying: false,
-        {{-- State untuk memunculkan form editing komentar --}}
-    isEditing: false,
-        {{-- Insiasi isi input pada form komentar --}}
-    editContent: '{{ $comment->content }}',
-        {{-- Stata untuk menampilkan dropdown reply komentar --}}
-    showReplies: false,
-        {{-- Targeting replied komentar dan parent komentar --}}
-    replyTargetId: '',
-        replyTargetName: '',
-
-        {{-- Semacam onstructor function untuk menginisiasi variable atau state yang diperlukan --}}
-    setupReply(id, name) {
-            this.isReplying = true;
-            this.replyTargetId = id;
-            this.replyTargetName = name;
-            $nextTick(() => { $refs.replyInput.focus(); });
-        },
-
-        {{-- Function untuk gulir komentar sesuai komentar yang di reply --}}
-    scrollToTarget(id) {
-        const el = document.getElementById('comment-' + id);
-        if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            el.classList.add('bg-primary-light/20', 'transition-colors', 'duration-1000');
-            setTimeout(() => el.classList.remove('bg-primary-light/20'), 1000);
-        }
-    },
-}" class="space-y-4 mb-6" id="comment-{{ $comment->id }}">
+<div x-data="commentItem('{{ $comment->content }}')" class="space-y-4 mb-6" id="comment-{{ $comment->id }}" class="space-y-4 mb-6"
+    id="comment-{{ $comment->id }}">
 
     {{-- Komentar utama atau parent komentar --}}
     <div class="flex gap-4 group relative">
@@ -72,21 +43,26 @@
                 <div class="flex items-center gap-3">
 
                     {{-- CTA untuk toggle like  --}}
-                    <form action="{{ route('likes.toggle', ['type' => 'comment', 'slug' => $comment->id]) }}"
-                        method="POST" class="flex items-center gap-1">
+                    <form class="flex items-center justify-center gap-1.5" x-data="likeButton(
+                        {{ $comment->likes_count }},
+                        {{ auth()->check() && $comment->isLikedBy(auth()->id()) ? 'true' : 'false' }},
+                        {{ auth()->check() ? 'true' : 'false' }},
+                        'comment',
+                        '{{ $comment->id }}'
+                    )"
+                        @submit.prevent="toggled"
+                        action="{{ route('likes.toggle', ['type' => 'comment', 'slug' => $comment->id]) }}"
+                        method="POST" class="flex items-center gap-1.5">
                         @csrf
-                        {{-- Membaca status like berdasarkan variable is liked  yang sudah dibuat sebelumnya --}}
-                        <button type="submit"
-                            class="transition transform hover:scale-110 {{ $isLiked($comment) ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
-                            @if ($isLiked($comment))
-                                <x-heroicon-s-heart class="size-4" />
-                            @else
-                                <x-heroicon-o-heart class="size-4" />
-                            @endif
+
+                        {{-- Icon love relative tergantung state yang dihasilkan dari like button module --}}
+                        <button type="submit" :class="isLiked ? 'text-red-600' : 'text-gray-400'"
+                            class="transition-colors duration-200 hover:scale-110">
+                            <x-heroicon-s-heart x-show="isLiked" class="size-4" />
+                            <x-heroicon-o-heart x-show="!isLiked" class="size-4" />
                         </button>
 
-                        {{-- Jumlah likes --}}
-                        <span class="text-xs font-semibold text-[#555]">{{ $comment->likes_count }}</span>
+                        <span x-text="likesCount" class="text-sm"></span>
                     </form>
 
                     {{-- Menu delete komentar berdasarkan pengguna yang sedang login dan apakah pengguna tersebut yang mempunyai komentar yang sedang dinteraksikan sekarang --}}
@@ -199,19 +175,26 @@
                             <div class="flex items-center gap-2">
 
                                 {{-- Toggle like --}}
-                                <form action="{{ route('likes.toggle', ['type' => 'comment', 'slug' => $reply->id]) }}"
-                                    class="flex items-center gap-1" method="POST">
+                                <form class="flex items-center justify-center gap-1.5" x-data="likeButton(
+                                    {{ $reply->likes_count }},
+                                    {{ auth()->check() && $reply->isLikedBy(auth()->id()) ? 'true' : 'false' }},
+                                    {{ auth()->check() ? 'true' : 'false' }},
+                                    'comment',
+                                    '{{ $reply->id }}'
+                                )"
+                                    @submit.prevent="toggled"
+                                    action="{{ route('likes.toggle', ['type' => 'comment', 'slug' => $reply->id]) }}"
+                                    method="POST" class="flex items-center gap-1.5">
                                     @csrf
-                                    <button
-                                        class="{{ $isLiked($reply) ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
-                                        @if ($isLiked($reply))
-                                            <x-heroicon-s-heart class="size-4" />
-                                        @else
-                                            <x-heroicon-o-heart class="size-4" />
-                                        @endif
+
+                                    {{-- Icon love relative tergantung state yang dihasilkan dari like button module --}}
+                                    <button type="submit" :class="isLiked ? 'text-red-600' : 'text-gray-400'"
+                                        class="transition-colors duration-200 hover:scale-110">
+                                        <x-heroicon-s-heart x-show="isLiked" class="size-4" />
+                                        <x-heroicon-o-heart x-show="!isLiked" class="size-4" />
                                     </button>
 
-                                    <span class="text-xs font-semibold text-[#555]">{{ $reply->likes_count }}</span>
+                                    <span x-text="likesCount" class="text-sm"></span>
                                 </form>
 
 
@@ -277,8 +260,7 @@
     <div x-show="isReplying" @click.outside="isReplying = false" x-transition class="mt-4 relative z-20"
         style="display: none;">
         @auth
-            <form @submit.prevent="submitKomentar"
-                action="{{ route('comments.store', ['type' => 'article', 'slug' => $articleSlug]) }}" method="POST">
+            <form action="{{ route('comments.store', ['type' => 'article', 'slug' => $modelSlug]) }}" method="POST">
                 @csrf
                 {{-- Untuk membuat scope khusus, karena kita memerlukan parent id untuk tracking jumlah reply dari parent ini walau yang di reply tidak selalu parent, bisa jadi juga reply komentar reply lain yang intinya masih satu scope dengan parent saat ini. --}}
                 <input type="hidden" name="parent_id" value="{{ $comment->id }}">
@@ -303,7 +285,8 @@
             </form>
         @else
             {{-- Karena fitur komentar ini hanya bisa digunakan ketika pengguna sudah login, maka ini adalah pengecualian ketika pengguna belum login --}}
-            <div class="text-center text-xs text-gray-500">Please login to reply.</div>
+            <div @click="open = !open" @click.outside="open = false" class="text-center text-xs text-gray-400">Please
+                login to reply.</div>
         @endauth
     </div>
 </div>

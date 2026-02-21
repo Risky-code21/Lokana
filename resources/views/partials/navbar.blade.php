@@ -3,7 +3,7 @@
     Biasanya via @vite(['resources/js/app.js']) 
 --}}
 <header x-data="{ mobileOpen: false, userDropdownOpen: false }"
-    class="fixed top-0 left-0 w-full bg-white border-b border-gray-200 z-50 transition-all duration-300">
+    class="fixed top-0 left-0 w-full bg-white border-b border-gray-200 z-40 transition-all duration-300">
 
     <div
         class="max-w-8xl mx-auto px-4 sm:px-8 md:px-12 lg:px-56 h-20 flex items-center justify-between lg:justify-normal">

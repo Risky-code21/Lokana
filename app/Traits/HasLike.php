@@ -33,15 +33,12 @@ trait HasLike
 
         if ($like) {
             $like->delete();
-            return 'unliked';
+            return true;
         } else {
-            // MAGIC LAGI:
-            // create() otomatis mengisi likeable_id & likeable_type
-            // sesuai dengan model yang memanggil trait ini.
             $this->likes()->create([
                 'user_id' => $userId
             ]);
-            return 'liked';
+            return false;
         }
     }
 

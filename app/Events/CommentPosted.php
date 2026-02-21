@@ -30,7 +30,7 @@ class CommentPosted implements ShouldBroadcastNow
         // Ini sebenearny agar riskan karena bisa membuat response reverb menjadi berat, karena pada saat pembuatan ini kita harus menaikan kapisitas payload dari server reverb kita menjadi 10kb
         $this->html = view('components.comment-bubble', [
             'comment' => $comment,
-            'articleSlug' => $slug
+            'modelSlug' => $slug
         ])->render();
     }
 

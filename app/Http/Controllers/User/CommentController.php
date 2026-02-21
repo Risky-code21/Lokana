@@ -43,7 +43,9 @@ class CommentController extends Controller
         ]);
 
         // Trigger event brodcasting dengan meneruskan data - data yang sudah ada sebelumnya
-        CommentPosted::dispatch($comment, $slug);
+        if (is_null($comment->parent_id)) {
+            CommentPosted::dispatch($comment, $slug);
+        }
 
         if ($request->ajax()) {
             return response()->json([
@@ -51,6 +53,8 @@ class CommentController extends Controller
                 'message' => 'Komentar berhasil dikirim!'
             ]);
         }
+
+        return back()->withFragment('item-' . $model->id);
     }
 
     /**
