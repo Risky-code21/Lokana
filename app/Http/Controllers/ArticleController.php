@@ -98,6 +98,8 @@ class ArticleController extends Controller
         // 1. Ambil data artikel
         $article = Article::where('slug', $slug)->firstOrFail();
 
+        $article->recordView();
+
         // 2. Ambil komentar khusus PARENT saja (parent_id = null)
         // Gunakan paginate(5) agar diload 5 per 5
         $comments = Comment::with(['user', 'replies.user']) // Eager load biar cepat
