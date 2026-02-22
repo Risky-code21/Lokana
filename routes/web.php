@@ -88,30 +88,6 @@ Route::get('/faq', function () {
     return view('pages.faq-page', compact('faqs'));
 })->name('faq.page');
 
-
-Route::controller(ArticleController::class)->group(function () {
-
-    // Halaman List Artikel
-    Route::get('/articles', 'index')->name('article.index');
-
-    // Halaman Detail (menggunakan Slug)
-    Route::get('/articles/{slug}', 'show')->name('article.detail');
-
-    // Crud sementara article
-    Route::post('articles/post', 'store')->name('articles.store');
-
-    // Proses Simpan Artikel
-    Route::post('/store', 'store')->name('articles.store');
-
-    Route::get('article/edit/{slug}', 'edit')->name('article.edit');
-
-    Route::put('/article/update/{article:slug}', 'update')->name('articles.update');
-    Route::delete('/article/delete/{article:slug}', 'delete')->name('article.delete');
-
-    // API Khusus untuk Froala Editor Upload Image
-    Route::post('/upload-media', 'uploadFromEditor')->name('articles.upload_media');
-});
-
 // Route untuk menu article
 // Menggunakan group route, agar lebih terorganisir dengan baik
 // Digroup bedasarkan prefix, name, dan controller
@@ -155,6 +131,7 @@ Route::middleware('auth')->prefix('likes')->name('likes.')->controller(LikeContr
 // Testing fitur admin versi cepat
 // Untuk sekarang ini hanya untuk testing CRUD saja
 Route::get('/testing', [ArticleController::class, 'create'])->name('testing');
+
 // Explore UMKM page
 Route::get('/explore-umkm', function () {
 
@@ -367,47 +344,3 @@ Route::get('/about-us', function () {
 
     return view('pages.about-us', compact('about'));
 })->name('about.us');
-
-// Route untuk menu article
-// Menggunakan group route, agar lebih terorganisir dengan baik
-// Digroup bedasarkan prefix, name, dan controller
-Route::controller(ArticleController::class)->prefix('articles')->name('articles.')->group(function () {
-    // Halaman Lutama artikel
-    Route::get('/', 'index')->name('index');
-
-    // Halaman Detail artikel (menggunakan Slug)
-    Route::get('/{slug}', 'show')->name('show');
-});
-
-// Route untuk fitur komentar
-// Pengguna yang ingin berkomentar atau mereply suatu komentar harus lah pengguna yang sudah terautentikas
-// Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
-// Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
-Route::middleware('auth')->prefix('comments')->name('comments.')->controller(CommentController::class)->group(function () {
-
-    // Upload komentar
-    Route::post('/{type}/{slug}', 'store')
-        ->name('store');
-
-    // Update komentar
-    Route::put('/{comment}', 'update')
-        ->name('update');
-
-    // Delete Komentar
-    Route::delete('/{comment}', 'destroy')
-        ->name('destroy');
-});
-
-// Route untuk fitur like 
-// Pengguna yang ingin meemberikan like harus login terlebih dahulu
-// Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
-// Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
-Route::middleware('auth')->prefix('likes')->name('likes.')->controller(LikeController::class)->group(function () {
-
-    Route::post('/{type}/{slug}', 'toggle')
-        ->name('toggle');
-});
-
-// Testing fitur admin versi cepat
-// Untuk sekarang ini hanya untuk testing CRUD saja
-Route::get('/testing', [ArticleController::class, 'create'])->name('testing');
