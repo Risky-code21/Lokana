@@ -59,8 +59,10 @@ Route::get('/profile', function () {
     return view('pages.profile-page', compact('user'));
 })->name('profile');
 
-// FAQ page
+// Route untuk faq page
+// Tidak di group secara khusus karena tidak memiliki fitur khusus seperti artikel, komentar, dll. Jadi cukup satu route saja untuk menampilkan halaman FAQ statis.
 Route::get('/faq', function () {
+
     $faqs = [
         'General Question' => [
             [
@@ -85,8 +87,8 @@ Route::get('/faq', function () {
         ],
     ];
 
-    return view('pages.faq-page', compact('faqs'));
-})->name('faq.page');
+    return view('pages.user.faq.faq-page', compact('faqs'));
+})->name('faq.index');
 
 // Route untuk menu article
 // Menggunakan group route, agar lebih terorganisir dengan baik

@@ -4,6 +4,7 @@ import Alpine from "alpinejs";
 import likeButton from "./likeButton";
 import commentSection from "./commentSection";
 import commentItem from "./CommentItem";
+import { initFAQ } from "./faq";
 
 // Insialisasi alpine js sebagai object global
 window.Alpine = Alpine;
@@ -17,6 +18,10 @@ Alpine.data("commentSection", commentSection);
 
 // Modul untuk component bubble
 Alpine.data("commentItem", commentItem);
+
+document.addEventListener("DOMContentLoaded", () => {
+    initFAQ();
+});
 
 // Mulai alpine js
 Alpine.start();
