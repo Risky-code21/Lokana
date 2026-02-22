@@ -29,22 +29,46 @@ trait HasView
      */
     public function recordView()
     {
-        // Generate Key Cookie Unik
         $cookieName = 'viewed_' . str_replace('\\', '_', $this->getMorphClass()) . '_' . $this->getKey();
 
-        // Cek Cookie (Cegah Spam)
+        // 1. Cek Cookie dulu (Benteng pertama)
         if (Cookie::get($cookieName)) {
             return;
         }
 
-        // Simpan data view ke Database
-        $this->views()->firstOrCreate([
-            'ip_address' => Request::ip(),
-            'user_agent' => Request::userAgent(),
-            'visitor_id'    => Auth::id() ?? Str::uuid(), // Nullable
-        ]);
+        // 2. Tentukan identitas pengunjung
+        $visitorId = Auth::id();
 
-        // 4. Set Cookie 60 menit
+        // Jika tidak login, kita bisa pakai IP atau UUID yang disimpan di cookie
+        // Tapi untuk database, paling aman gunakan Auth::id() saja jika tersedia
+        if ($visitorId) {
+            $this->views()->firstOrCreate(
+                [
+                    'visitor_id'    => $visitorId,
+                    'viewable_id'   => $this->getKey(),
+                    'viewable_type' => $this->getMorphClass(),
+                ],
+                [
+                    'ip_address' => Request::ip(),
+                    'user_agent' => Request::userAgent(),
+                ]
+            );
+        } else {
+            // Logika untuk Guest (Opsional: simpan berdasarkan IP saja)
+            $this->views()->firstOrCreate(
+                [
+                    'ip_address'    => Request::ip(),
+                    'visitor_id'    => null, // Biarkan null untuk guest
+                    'viewable_id'   => $this->getKey(),
+                    'viewable_type' => $this->getMorphClass(),
+                ],
+                [
+                    'user_agent' => Request::userAgent(),
+                ]
+            );
+        }
+
+        // 3. Set Cookie (Agar 60 menit ke depan tidak hit database lagi)
         Cookie::queue($cookieName, true, 60);
     }
 }
