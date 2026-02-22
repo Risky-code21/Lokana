@@ -17,7 +17,7 @@
 
         {{-- PERBAIKAN 1: Action ke route UPDATE dan tambahkan method PUT --}}
         {{-- Gunakan parameter $article->slug atau $article->id sesuai route definition --}}
-        <form action="{{ route('articles.update', $article->slug) }}" method="POST" enctype="multipart/form-data"
+        <form action="{{ route('admin.articles.update', $article->slug) }}" method="POST" enctype="multipart/form-data"
             class="space-y-6">
             @csrf
             @method('PUT') {{-- WAJIB ADA UNTUK EDIT --}}
@@ -44,7 +44,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Konten Lengkap</label>
                         {{-- PERBAIKAN 3: Samakan ID dengan Script JS ('froala-editor') --}}
-                        <textarea id="froala-editor" name="content">{{ old('content', $article->content) }}</textarea>
+                        <textarea id="example" name="content">{{ old('content', $article->content) }}</textarea>
                     </div>
                 </div>
 
@@ -105,20 +105,36 @@
     </script>
 
     <script>
-        // PERBAIKAN 5: Satukan inisialisasi JS dan pastikan ID-nya cocok (#froala-editor)
-        new FroalaEditor('#froala-editor', {
-            imageUploadURL: "{{ route('articles.upload_media') }}",
-            imageUploadParams: {
-                _token: "{{ csrf_token() }}"
+        // 1. Inisialisasi Froala Editor (Targetkan #example)
+        var editor = new FroalaEditor('#example', {
+            // Konfigurasi Upload Image
+            imageUploadURL: "{{ route('admin.articles.upload_media') }}", // ✅ Nama Route Sesuai dengan web.php
+
+            // Konfigurasi Header untuk CSRF Token Laravel
+            requestHeaders: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}" // ✅ Format yang disukai Froala
             },
+
             imageUploadMethod: 'POST',
-            imageMaxSize: 5 * 1024 * 1024,
+
+            // Opsional: Batasi ukuran
+            imageMaxSize: 5 * 1024 * 1024, // 5MB
             imageAllowedTypes: ['jpeg', 'jpg', 'png', 'webp'],
+
+            // Tinggi editor
             heightMin: 400,
-            placeholderText: 'Tulis konten di sini...',
+            placeholderText: 'Mulai menulis cerita inspiratif di sini...',
+
+            // Tambahkan event untuk memantau jika ada error
+            events: {
+                'image.error': function(error, response) {
+                    console.log('Error Froala:', error);
+                    console.log('Response Server:', response);
+                }
+            }
         });
 
-        // Script Preview Image (Tetap sama, logic logic hidden/show-nya sudah ditangani blade diatas)
+        // 2. Script Preview Thumbnail (Biarkan sama persis seperti kode Anda)
         const thumbnailInput = document.getElementById('thumbnail-input');
         const imgPreview = document.getElementById('img-preview');
         const placeholderText = document.getElementById('placeholder-text');

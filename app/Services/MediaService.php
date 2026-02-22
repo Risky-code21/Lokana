@@ -7,13 +7,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Exception;
 
-/**
- * Undocumented class
- */
 class MediaService
 {
     /**
-     * Undocumented function
+     *  Function untuk mengupload foto ke disk, saat ini masih disk lokal belum CDN
      *
      * @param Model $model
      * @param UploadedFile $file
@@ -59,15 +56,15 @@ class MediaService
         // 5. Simpan ke Database
         return $model->medias()->create([
             'url' => $path,
-            'filename' => $filename
+            'is_thumbnail' => $thumbnail,
         ]);
     }
 
     /**
-     * Undocumented function
+     *  Function untuk menghapus foto article
      *
-     * @param Model $model
-     * @return boolean
+     *  @param Model $model
+     *  @return boolean
      */
     public function delete(Model $model): bool
     {
@@ -78,6 +75,7 @@ class MediaService
         foreach ($model->medias as $media) {
             $media->delete(); // Hapus link gambar ke artikel ini
 
+            Storage::delete($media);
             // Opsional: Cek apakah gambar ini dipakai artikel lain?
             // Jika tidak ada yang pakai, baru hapus fisik (Storage::delete).
         }

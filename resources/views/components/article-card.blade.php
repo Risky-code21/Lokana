@@ -33,7 +33,7 @@
     <div class="p-5 flex flex-col flex-grow space-y-4">
 
         {{-- Judul Artikel --}}
-        <a href="{{ route('article.detail', $article->slug) }}" class="block group">
+        <a href="{{ route('articles.show', $article->slug) }}" class="block group">
             <h3
                 class="text-xl font-bold text-gray-800 group-hover:text-primary-main line-clamp-2 leading-tight transition-colors">
                 {{ $article->title }}
@@ -97,10 +97,10 @@
                 </div>
 
             </div>
-            <a href="{{ route('article.detail', $article->slug) }}" class="btn-primary block text-center">Read
+            <a href="{{ route('articles.show', $article->slug) }}" class="btn-primary block text-center">Read
                 more</a>
 
-            {{-- <form action="{{ route('article.delete', $article->slug) }}" method="POST">
+            {{-- <form action="{{ route('articles.delete', $article->slug) }}" method="POST">
                 @csrf
                 @method('delete')
                 <button type="submit" class="btn-primary bg-red-600 block text-center">Hapus article</button>

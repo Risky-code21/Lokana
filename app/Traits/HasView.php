@@ -38,7 +38,7 @@ trait HasView
         }
 
         // Simpan data view ke Database
-        $this->views()->create([
+        $this->views()->firstOrCreate([
             'ip_address' => Request::ip(),
             'user_agent' => Request::userAgent(),
             'visitor_id'    => Auth::id() ?? Str::uuid(), // Nullable

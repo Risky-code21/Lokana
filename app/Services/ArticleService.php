@@ -4,23 +4,22 @@ namespace App\Services;
 
 use App\Events\ArticleStatusUpdated;
 use App\Models\Article;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class ArticleService
 {
     public function __construct(protected MediaService $mediaService) {}
 
-    // =========================================================================
-    // 🟢 USER SIDE (Public Access)
-    // =========================================================================
+    // ----------------------------------------------------- User
 
     /**
-     * Mengambil artikel yang sudah publish dengan filter & pagination
+     *  Function untuk mendapatkan data article untuk ditampilkan di sisi user
+     *
+     *  @param array $filters
+     *  @param integer $perPage
+     *  @return LengthAwarePaginator
      */
     public function getPublishedArticles(array $filters = [], int $perPage = 6): LengthAwarePaginator
     {
@@ -50,14 +49,18 @@ class ArticleService
         return $query->paginate($perPage);
     }
 
-    // app/Services/ArticleService.php
-
+    /**
+     *  Function untuk menggambil data article
+     *
+     *  @param array $filters
+     *  @return Query
+     */
     public function getPopularArticle(array $filters = [])
     {
-        // 1. Gunakan Query Dasar (sama seperti getPublishedArticles)
+        //Gunakan Query Dasar (sama seperti getPublishedArticles)
         $query = Article::query()->where('status', 'publish');
 
-        // 2. Terapkan Filter (Copy logic filter dari getPublishedArticles atau refactor jadi private function)
+        //Terapkan Filter (Copy logic filter dari getPublishedArticles atau refactor jadi private function)
         if (isset($filters['search'])) {
             $query->where('title', 'like', '%' . $filters['search'] . '%');
         }
@@ -68,81 +71,37 @@ class ArticleService
             });
         }
 
-        // 3. LOGIC POPULER (Views + Likes)
         // Kita urutkan berdasarkan View terbanyak, lalu Like terbanyak
         return $query
-            ->orderBy('views_count', 'desc') // Langsung order saja
+            ->orderBy('views_count', 'desc')
             ->orderBy('likes_count', 'desc')
             ->first();
     }
 
     /**
-     * Detail Artikel User
+     *  Function untuk mengambil article berdasarkan slugnya
+     * 
+     *  @param string $slug
+     *  @return Article
      */
     public function getArticleBySlug(string $slug): Article
     {
         return Article::where('slug', $slug)
             ->where('status', 'publish')
-            ->with(['medias', 'author', 'category', 'comments.user']) // Load komen & user-nya
+            ->with(['medias', 'author', 'category', 'comments.user'])
             ->withCount(['views', 'comments', 'likes'])
             ->firstOrFail();
     }
 
-    /**
-     * Logika Like/Unlike (Toggle)
-     */
-    public function toggleLike(Article $article, User $user): array
-    {
-        // Cek apakah user sudah like?
-        // Asumsi relasi likes() adalah MorphMany atau HasMany
-        $existingLike = $article->likes()->where('user_id', $user->id)->first();
 
-        if ($existingLike) {
-            $existingLike->delete();
-            $status = 'unliked';
-        } else {
-            $article->likes()->create([
-                'user_id' => $user->id
-            ]);
-            $status = 'liked';
-        }
-
-        // 🔥 Broadcast Update ke Reverb (Update jumlah like realtime)
-        $this->broadcastUpdate($article);
-
-        return [
-            'status' => $status,
-            'total_likes' => $article->likes()->count()
-        ];
-    }
+    // ----------------------------------------------------- Admin
 
     /**
-     * Mencatat View & Broadcast Realtime
-     */
-    public function recordView(Article $article, string $ip, string $userAgent): void
-    {
-        // Cek duplikasi view sederhana (opsional: bisa pakai Session/Cache untuk throttle)
-        // Disini kita insert saja sesuai request
-        $existingView = $article->views()->where('ip_address', $ip)->where('user_agent', $userAgent)->first();
-        if (!$existingView) {
-            $article->views()->create([
-                'visitor_id' => random_int(2, 20),
-                'ip_address' => $ip,
-                'user_agent' => $userAgent // Pastikan nama kolom di DB 'user_agent' atau sesuaikan
-            ]);
-        }
-
-        // 🔥 Broadcast Update ke Reverb (Update jumlah view realtime)
-        $this->broadcastUpdate($article);
-    }
-
-    // =========================================================================
-    // 🔴 ADMIN SIDE (Management)
-    // =========================================================================
-
-    /**
-     * List Artikel untuk Admin (Bisa lihat draft & published)
-     * + Fitur Filter Admin
+     *  Function untuk menampilkan article pada index admin
+     *
+     * @param array $filters
+     * @param integer $perPage
+     * @return LengthAwarePaginator
      */
     public function getAdminArticles(array $filters = [], int $perPage = 10): LengthAwarePaginator
     {
@@ -165,15 +124,20 @@ class ArticleService
     }
 
     /**
-     * Create Article
+     *  Function untuk membuat sebuah article baru
+     *
+     *  @param array $data
+     *  @return Article
      */
     public function createArticle(array $data): Article
     {
+        // Penggunaan db transaction untuk bisa rollback jika ada proses tak terduga yang bisa saja merusak database
         return DB::transaction(function () use ($data) {
-            // 1. Simpan Data Artikel
+
+            // pembuatan article menggunakan data yang diteruskan melalui controller sebelumnya
             $article = Article::create([
                 'title'             => $data['title'],
-                'slug'              => \Illuminate\Support\Str::slug($data['title']), // Auto slug
+                'slug'              => \Illuminate\Support\Str::slug($data['title']),
                 'author_id'         => Auth::id(),
                 'category_id'       => $data['category_id'],
                 'short_description' => $data['short_description'],
@@ -181,16 +145,14 @@ class ArticleService
                 'status'            => $data['status'] ?? 'draft',
             ]);
 
-            // 2. Upload Media (Integrasi MediaService Baru)
-            if (isset($data['medias']) && is_array($data['medias'])) {
-                foreach ($data['medias'] as $file) {
-                    // Panggil MediaService yang sudah kita refactor (Logic MD5 & Local Storage)
-                    $this->mediaService->upload(
-                        $article,
-                        $file,
-                        'article-images' // Nama folder penyimpanan
-                    );
-                }
+            // Insert foto thumbnail article
+            if (isset($data['thumbnail'])) {
+                $this->mediaService->upload(
+                    $article,
+                    $data['thumbnail'],
+                    'article-thumbnails-images',
+                    true
+                );
             }
 
             return $article;
@@ -198,82 +160,70 @@ class ArticleService
     }
 
     /**
-     * Update Article
+     *  Function untuk update article
+     *
+     *  @param Article $article
+     *  @param array $data
+     *  @return Article
      */
     public function updateArticle(Article $article, array $data): Article
     {
         return DB::transaction(function () use ($article, $data) {
-            // 1. Update Data Text
+            // pembuatan article menggunakan data yang diteruskan melalui controller sebelumnya
             $article->update([
                 'title'             => $data['title'],
-                // Slug update opsional, hati-hati SEO rusak jika slug berubah
+                'slug'              => \Illuminate\Support\Str::slug($data['title']),
+                'author_id'         => Auth::id(),
                 'category_id'       => $data['category_id'],
                 'short_description' => $data['short_description'],
                 'content'           => $data['content'],
-                'status'            => $data['status'] ?? $article->status,
+                'status'            => $data['status'] ?? 'draft',
             ]);
 
-            // 2. Tambah Media Baru (Jika ada upload baru saat edit)
-            if (isset($data['medias']) && is_array($data['medias'])) {
-                foreach ($data['medias'] as $file) {
-                    $this->mediaService->upload($article, $file, 'article-images');
-                }
+            // Insert foto thumbnail article
+            if (isset($data['thumbnail'])) {
+                $this->mediaService->upload(
+                    $article,
+                    $data['thumbnail'],
+                    'article-thumbnails-images',
+                    true
+                );
             }
-
-            // Catatan: Untuk menghapus media spesifik, sebaiknya buat endpoint terpisah 
-            // misal: DELETE /media/{id} yang memanggil MediaService->deleteById($id)
 
             return $article;
         });
     }
 
     /**
-     * Delete Single Article
+     *  Function untuk menghapus article tunggal
+     *
+     *  @param Article $article
+     *  @return boolean
      */
     public function deleteArticle(Article $article): bool
     {
         return DB::transaction(function () use ($article) {
-            // 1. Hapus Media Fisik & Record via MediaService
             $this->mediaService->delete($article);
-
-            // 2. Hapus Artikel
             return $article->delete();
         });
     }
 
     /**
-     * 🔥 Mass Delete (Menghapus Banyak sekaligus)
+     *  Function untuk menghapus beberapa article sekaligus
+     *
+     *  @param array $articleIds
+     *  @return integer
      */
     public function massDelete(array $articleIds): int
     {
         $count = 0;
-        // Kita looping agar logic MediaService::delete() tetap terpanggil per artikel
-        // Jangan pakai Article::whereIn(...)->delete() karena itu bypass logic hapus gambar!
-
         $articles = Article::whereIn('id', $articleIds)->get();
 
         foreach ($articles as $article) {
-            $this->deleteArticle($article); // Reuse fungsi delete single di atas
+            $this->deleteArticle($article);
             $count++;
         }
 
         return $count;
-    }
-
-    // =========================================================================
-    // 📡 PRIVATE HELPERS
-    // =========================================================================
-
-    /**
-     * Helper untuk dispatch event Reverb
-     */
-    private function broadcastUpdate(Article $article): void
-    {
-        // Refresh model untuk mendapatkan count terbaru (likes/views)
-        // Kita load count-nya saja agar ringan payload-nya
-        $article->loadCount(['views', 'likes', 'comments']);
-
-        // Dispatch Event
-        ArticleStatusUpdated::dispatch($article);
     }
 }

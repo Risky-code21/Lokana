@@ -99,7 +99,7 @@
 
         {{-- Content article yang dimana content sebenarnya adalah sebuah elemen html yang memerlukan syntax !! untuk bisa di render dengan baik --}}
         <div
-            class="mb-10 p-6 md:p-8 lg:p-12 bg-surface-high rounded-btn article-prose text-[#444] text-base leading-[1.8] text-justify">
+            class="mb-10 p-6 md:p-8 lg:p-12 bg-surface-high rounded-btn article-prose text-[#444] text-base leading-[1.8] text-justify lokana-article-content">
             {!! $article->content !!}
         </div>
 

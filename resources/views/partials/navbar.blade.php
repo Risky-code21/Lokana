@@ -20,8 +20,8 @@
         <nav class="hidden lg:flex mx-auto items-center gap-8">
             <a href="{{ route('landing-page') }}"
                 class="text-gray-600 hover:text-primary-main font-medium transition">Home</a>
-            <a href="{{ route('article.index') }}"
-                class="text-gray-600 hover:text-primary-main font-medium transition">Article</a>
+            <a href="{{ route('articles.index') }}"
+                class="text-gray-600 hover:text-primary-main font-medium transition">Articles</a>
             <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">Explore</a>
             <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">FAQ</a>
             <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">About us</a>
@@ -85,7 +85,7 @@
                             Profile</a>
                         <a href="#"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-main">Saved
-                            Articles</a>
+                            Articless</a>
                         <a href="#"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-main">Settings</a>
 
@@ -137,8 +137,8 @@
         <div class="p-4 space-y-6">
             <a href="{{ route('landing-page') }}"
                 class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Home</a>
-            <a href="{{ route('article.index') }}"
-                class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Article</a>
+            <a href="{{ route('articles.index') }}"
+                class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Articles</a>
             <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Explore</a>
             <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">FAQ</a>
             <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">About

@@ -9,45 +9,51 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
+@php
+    // Function untuk cek apakah user yang login saat ini sudah melakukan like pada suatu komentar yang ada disini, entah komentar replay ataupun komentar utama
+    $smartAvatar = fn($model) => $model->author->avatar ??
+        'https://ui-avatars.com/api/?name=' . urlencode($model->author->name);
+
+@endphp
+
 <body class="bg-white text-gray-800 antialiased flex flex-col min-h-screen">
 
     {{-- 1. NAVBAR --}}
     @include('partials.navbar')
 
+    <section class="w-full h-fit overflow-x-auto max-w-[1600px] mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mt-28">
+        <div class="flex gap-3 w-max">
+            {{-- Active State Example --}}
+            {{-- 1. Tombol "All" (Opsional: Untuk reset filter) --}}
+            <a href="{{ route('articles.index', request()->except('category')) }}"
+                class="py-2 px-4 text-sm font-medium rounded-btn transition hover:opacity-90 
+                {{ request('category') === null
+                    ? 'bg-primary-light text-white'
+                    : 'bg-white text-primary-light border border-primary-light' }}">
+                All
+            </a>
+
+            {{-- 2. Looping Kategori --}}
+            @foreach ($categoriesArticle as $categorie)
+                {{-- PERBAIKAN HREF: Logic Anda sudah benar (array_merge), ini menjaga search tetap ada saat ganti kategori --}}
+                <a href="{{ route('articles.index', array_merge(request()->query(), ['category' => $categorie->name])) }}"
+                    class="py-2 px-4 text-sm font-medium rounded-btn transition hover:opacity-90 
+                    {{-- PERBAIKAN LOGIC AKTIF: --}}
+                    {{-- Bandingkan 'parameter category di URL' dengan 'slug kategori saat ini' --}}
+                    {{ request('category') == $categorie->name
+                        ? 'bg-primary-light text-white'
+                        : 'bg-white text-primary-light border border-primary-light' }}">
+                    {{ $categorie->name }}
+                </a>
+            @endforeach
+        </div>
+    </section>
+
     {{-- 2. MAIN CONTENT WRAPPER --}}
     {{-- Gunakan 'flex-grow' agar footer terdorong ke bawah jika konten sedikit --}}
     @if (isset($articles) && isset($populerArticle))
-        <main class="flex-grow w-full max-w-[1600px] mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mt-28 mb-8 space-y-6">
 
-            {{-- A. CATEGORY PILLS (Scrollable on Mobile) --}}
-            {{-- overflow-x-auto: Agar bisa di-swipe kiri-kanan di HP --}}
-            <section class="w-full h-fit overflow-x-auto pb-2">
-                <div class="flex gap-3 w-max">
-                    {{-- Active State Example --}}
-                    {{-- 1. Tombol "All" (Opsional: Untuk reset filter) --}}
-                    <a href="{{ route('article.index', request()->except('category')) }}"
-                        class="py-2 px-4 text-sm font-medium rounded-btn transition hover:opacity-90 
-                    {{ request('category') === null
-                        ? 'bg-primary-light text-white'
-                        : 'bg-white text-primary-light border border-primary-light' }}">
-                        All
-                    </a>
-
-                    {{-- 2. Looping Kategori --}}
-                    @foreach ($categoriesArticle as $categorie)
-                        {{-- PERBAIKAN HREF: Logic Anda sudah benar (array_merge), ini menjaga search tetap ada saat ganti kategori --}}
-                        <a href="{{ route('article.index', array_merge(request()->query(), ['category' => $categorie->name])) }}"
-                            class="py-2 px-4 text-sm font-medium rounded-btn transition hover:opacity-90 
-                        {{-- PERBAIKAN LOGIC AKTIF: --}}
-                        {{-- Bandingkan 'parameter category di URL' dengan 'slug kategori saat ini' --}}
-                        {{ request('category') == $categorie->name
-                            ? 'bg-primary-light text-white'
-                            : 'bg-white text-primary-light border border-primary-light' }}">
-                            {{ $categorie->name }}
-                        </a>
-                    @endforeach
-                </div>
-            </section>
+        <main class="flex-grow w-full mt-8 max-w-[1600px] mx-auto px-4 sm:px-8 md:px-12 lg:px-56 mb-8 space-y-6">
 
             {{-- B. FEATURED ARTICLE (Hero Section) --}}
             <section class="w-full">
@@ -64,8 +70,17 @@
                tanpa mempengaruhi dimensi container itu sendiri.
             2. w-full h-full object-cover: Agar gambar potrait ter-crop rapi (tidak gepeng).
         --}}
-                        <img src="{{ asset('storage/' . $populerArticle->thumbnail->url) }}" alt="Featured Article"
-                            class="absolute inset-0 w-full h-full object-cover object-center hover:scale-105 transition duration-500 ease-in-out" />
+                        @if ($populerArticle->thumbnail)
+                            <img src="{{ asset('storage/' . $populerArticle->thumbnail->url) }}" alt="Featured Article"
+                                class="absolute inset-0 w-full h-full object-cover object-center hover:scale-105 transition duration-500 ease-in-out" />
+                        @else
+                            {{-- Fallback Image jika tidak ada upload --}}
+                            <div
+                                class="absolute inset-0 w-full h-full object-cover object-center hover:scale-105 flex justify-center items-center transition duration-500 ease-in-out text-gray-400">
+                                <x-heroicon-s-photo class="w-12 h-12" />
+                            </div>
+                        @endif
+
                     </div>
 
                     {{-- Info (Kanan/Bawah) --}}
@@ -109,7 +124,8 @@
                         {{-- Author & Action --}}
                         <div class="flex gap-3 mt-10">
                             <div class="size-10 overflow-hidden rounded-full">
-                                <img src="https://ui-avatars.com/api/?name=Irman+Firdaus" alt=""
+                                <img src="{{ $smartAvatar($populerArticle) }}"
+                                    alt="{{ $populerArticle->author->name }}"
                                     class="size-full object-cover object-center" />
                             </div>
                             <div class="space-y-0.5">
@@ -120,7 +136,7 @@
                             </div>
                         </div>
 
-                        <a href="{{ route('article.detail', ['slug' => $populerArticle->slug]) }}"
+                        <a href="{{ route('articles.show', ['slug' => $populerArticle->slug]) }}"
                             class="btn-primary block px-8 text-center w-fit">Read more</a>
                     </div>
                 </div>

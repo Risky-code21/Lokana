@@ -4,63 +4,65 @@ namespace App\Policies;
 
 use App\Models\Article;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ArticlePolicy
 {
     /**
-     * Determine whether the user can view any models.
+     *  Undocumented function
+     *
+     *  @param User|null $user
+     *  @return boolean
      */
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Determine whether the user can view the model.
+     *  Undocumented function
+     *
+     *  @param User|null $user
+     *  @param Article $article
+     *  @return boolean
      */
-    public function view(User $user, Article $article): bool
+    public function view(?User $user, Article $article): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Determine whether the user can create models.
+     * Undocumented function
+     *
+     *  @param User $user
+     *  @return boolean
      */
     public function create(User $user): bool
     {
-        return false;
+        // Sesuaikan 'admin' dengan value yang ada di kolom role database Anda ya
+        return $user->role === 'admin';
     }
 
     /**
-     * Determine whether the user can update the model.
+     *  Undocumented function
+     *
+     *  @param User $user
+     *  @param Article $article
+     *  @return boolean
      */
     public function update(User $user, Article $article): bool
     {
-        return false;
+        return $user->role === 'admin';
     }
 
     /**
-     * Determine whether the user can delete the model.
+     *  Undocumented function
+     *
+     *  @param User $user
+     *  @param Article $article
+     *  @return boolean
      */
     public function delete(User $user, Article $article): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Article $article): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Article $article): bool
-    {
-        return false;
+        return $user->role === 'admin';
     }
 }

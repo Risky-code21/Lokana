@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 trait HasMedia
 {
     /**
-     * Relasi ke semua media (Gallery, dll)
+     *  Relation polymorphic yang akan otomatis dimiliki setiap model ketika menggunakan traits ini
+     *
+     *  @return MorphMany
      */
     public function medias(): MorphMany
     {
@@ -17,11 +19,13 @@ trait HasMedia
     }
 
     /**
-     * Relasi khusus Thumbnail (ambil satu saja)
+     *  Helper function untuk mengambil foto thumbnail tanpa perlu barisan kode yang panjang lebar
+     *
+     * @return MorphOne
      */
     public function thumbnail(): MorphOne
     {
-        // Asumsi logic Anda: is_thumbnail = true
+        // Ambil foto yang berkaitan dengan article dengan is thumbnail adalah true
         return $this->morphOne(Media::class, 'mediable')->where('is_thumbnail', true);
     }
 }

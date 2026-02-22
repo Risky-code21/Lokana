@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\Models\Like; // Pastikan model Like ada
+use App\Models\Like;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasLike
@@ -13,7 +13,10 @@ trait HasLike
     }
 
     /**
-     * Cek apakah user X sudah like?
+     *  Function untuk mengecek apakah suatu like dilakukan oleh user yang sedang terautentikasi pada saat ini
+     *
+     *  @param [type] $userId
+     *  @return boolean
      */
     public function isLikedBy($userId): bool
     {
@@ -25,9 +28,12 @@ trait HasLike
     }
 
     /**
-     * Toggle Like (Like/Unlike)
+     *  Helper function untuk membuat likes pada setiap model yang menggunakan traits ini
+     *
+     *  @param [type] $userId
+     *  @return boolean
      */
-    public function toggleLike($userId)
+    public function toggleLike($userId): bool
     {
         $like = $this->likes()->where('user_id', $userId)->first();
 
@@ -42,7 +48,6 @@ trait HasLike
         }
     }
 
-    // Atribut tambahan untuk JSON/Blade: $article->likes_count
     public function getLikesCountAttribute()
     {
         return $this->likes()->count();

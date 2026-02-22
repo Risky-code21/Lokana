@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\User\ArticleController;
 use App\Http\Controllers\User\LikeController;
 use App\Http\Controllers\User\CommentController;
 use Illuminate\Support\Facades\Route;
@@ -107,10 +107,20 @@ Route::controller(ArticleController::class)->group(function () {
 
     Route::put('/article/update/{article:slug}', 'update')->name('articles.update');
     Route::delete('/article/delete/{article:slug}', 'delete')->name('article.delete');
-    Route::post('/articles/{article:slug}/like', 'like')->name('articles.like');
 
     // API Khusus untuk Froala Editor Upload Image
     Route::post('/upload-media', 'uploadFromEditor')->name('articles.upload_media');
+});
+
+// Route untuk menu article
+// Menggunakan group route, agar lebih terorganisir dengan baik
+// Digroup bedasarkan prefix, name, dan controller
+Route::controller(ArticleController::class)->prefix('articles')->name('articles.')->group(function () {
+    // Halaman Lutama artikel
+    Route::get('/', 'index')->name('index');
+
+    // Halaman Detail artikel (menggunakan Slug)
+    Route::get('/{slug}', 'show')->name('show');
 });
 
 // Route untuk fitur komentar

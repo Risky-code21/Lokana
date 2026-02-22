@@ -12,7 +12,7 @@
     <div x-show="openDeleteModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"></div>
+        class="fixed inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity"></div>
 
     <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
         <div x-show="openDeleteModal" @click.outside="openDeleteModal = false"

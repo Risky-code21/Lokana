@@ -26,7 +26,8 @@
             </div>
         @endif
 
-        <form action="{{ route('articles.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.articles.store') }}" method="POST" enctype="multipart/form-data"
+            class="space-y-6">
             @csrf
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -108,17 +109,18 @@
     </div>
     <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'>
     </script>
+
     <script>
-        var editor = new FroalaEditor('#example');
-    </script>
-    <script>
-        // 1. Inisialisasi Froala Editor
-        new FroalaEditor('#froala-editor', {
+        // 1. Inisialisasi Froala Editor (Targetkan #example)
+        var editor = new FroalaEditor('#example', {
             // Konfigurasi Upload Image
-            imageUploadURL: "{{ route('articles.upload_media') }}",
-            imageUploadParams: {
-                _token: "{{ csrf_token() }}" // Wajib ada CSRF Token
+            imageUploadURL: "{{ route('admin.articles.upload_media') }}", // ✅ Nama Route Sesuai dengan web.php
+
+            // Konfigurasi Header untuk CSRF Token Laravel
+            requestHeaders: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}" // ✅ Format yang disukai Froala
             },
+
             imageUploadMethod: 'POST',
 
             // Opsional: Batasi ukuran
@@ -128,9 +130,17 @@
             // Tinggi editor
             heightMin: 400,
             placeholderText: 'Mulai menulis cerita inspiratif di sini...',
+
+            // Tambahkan event untuk memantau jika ada error
+            events: {
+                'image.error': function(error, response) {
+                    console.log('Error Froala:', error);
+                    console.log('Response Server:', response);
+                }
+            }
         });
 
-        // 2. Script Preview Thumbnail
+        // 2. Script Preview Thumbnail (Biarkan sama persis seperti kode Anda)
         const thumbnailInput = document.getElementById('thumbnail-input');
         const imgPreview = document.getElementById('img-preview');
         const placeholderText = document.getElementById('placeholder-text');
