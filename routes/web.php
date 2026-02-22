@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\User\ArticleController;
+use App\Http\Controllers\User\LikeController;
+use App\Http\Controllers\User\CommentController;
 use Illuminate\Support\Facades\Route;
 
 // Landing page (1 route saja, jangan dobel)
@@ -12,7 +15,7 @@ Route::get('/', function () {
     ];
 
     $products = collect(range(1, 6))->map(fn($i) => [
-        'image' => asset('images/product-'.$i.'.jpg'),
+        'image' => asset('images/product-' . $i . '.jpg'),
         'category' => 'HandCraft',
         'title' => "Bali’s Art #$i",
         'seller' => 'Pande Jagatama',
@@ -23,7 +26,7 @@ Route::get('/', function () {
     ])->toArray();
 
     $works = collect(range(1, 6))->map(fn($i) => [
-        'image' => asset('images/work-'.$i.'.jpg'),
+        'image' => asset('images/work-' . $i . '.jpg'),
         'title' => 'Arjuna Mask',
         'desc' => 'Topeng tradisional Bali yang dibuat secara handmade oleh pengrajin lokal.',
         'price' => 'Rp. 300.000',
@@ -31,15 +34,14 @@ Route::get('/', function () {
     ])->toArray();
 
     $articles = collect(range(1, 3))->map(fn($i) => [
-        'image' => asset('images/article-'.$i.'.jpg'),
+        'image' => asset('images/article-' . $i . '.jpg'),
         'title' => 'Article Name',
         'excerpt' => 'Cerita singkat tentang UMKM lokal dan produk-produk tradisional Bali.',
         'url' => '#',
     ])->toArray();
 
-    return view('pages.landing-page', compact('stats', 'products', 'works', 'articles'));
+    return view('pages.landing_page', compact('stats', 'products', 'works', 'articles'));
 })->name('landing-page');
-
 
 // Profile page
 Route::get('/profile', function () {
@@ -49,14 +51,13 @@ Route::get('/profile', function () {
         'role' => 'Owner MSME',
         'location' => 'Jln. Kartini',
         'joined' => '19 Januari 2025',
-        'avatar' => asset('images/avatar.jpg'),
-        'cover'  => asset('images/cover.jpg'),
+        'avatar' => asset('images/avatar.jpg'),      // siapkan gambarnya (atau ganti)
+        'cover'  => asset('images/cover.jpg'),       // siapkan gambarnya (atau ganti)
         'completion' => 50,
     ];
 
     return view('pages.profile-page', compact('user'));
 })->name('profile');
-
 
 // FAQ page
 Route::get('/faq', function () {
@@ -87,6 +88,49 @@ Route::get('/faq', function () {
     return view('pages.faq-page', compact('faqs'));
 })->name('faq.page');
 
+// Route untuk menu article
+// Menggunakan group route, agar lebih terorganisir dengan baik
+// Digroup bedasarkan prefix, name, dan controller
+Route::controller(ArticleController::class)->prefix('articles')->name('articles.')->group(function () {
+    // Halaman Lutama artikel
+    Route::get('/', 'index')->name('index');
+
+    // Halaman Detail artikel (menggunakan Slug)
+    Route::get('/{slug}', 'show')->name('show');
+});
+
+// Route untuk fitur komentar
+// Pengguna yang ingin berkomentar atau mereply suatu komentar harus lah pengguna yang sudah terautentikas
+// Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
+// Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
+Route::middleware('auth')->prefix('comments')->name('comments.')->controller(CommentController::class)->group(function () {
+
+    // Upload komentar
+    Route::post('/{type}/{slug}', 'store')
+        ->name('store');
+
+    // Update komentar
+    Route::put('/{comment}', 'update')
+        ->name('update');
+
+    // Delete Komentar
+    Route::delete('/{comment}', 'destroy')
+        ->name('destroy');
+});
+
+// Route untuk fitur like 
+// Pengguna yang ingin meemberikan like harus login terlebih dahulu
+// Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
+// Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
+Route::middleware('auth')->prefix('likes')->name('likes.')->controller(LikeController::class)->group(function () {
+
+    Route::post('/{type}/{slug}', 'toggle')
+        ->name('toggle');
+});
+
+// Testing fitur admin versi cepat
+// Untuk sekarang ini hanya untuk testing CRUD saja
+Route::get('/testing', [ArticleController::class, 'create'])->name('testing');
 
 // Explore UMKM page
 Route::get('/explore-umkm', function () {
@@ -102,15 +146,14 @@ Route::get('/explore-umkm', function () {
     // dummy produk
     $items = collect(range(1, 5))->map(function ($i) {
         $title =
-            $i === 2 ? "Bali’s Craft Center" :
-            ($i === 5 ? "Bali’s Arjuna’s mask" : "Bali’s Statue Carving");
+            $i === 2 ? "Bali’s Craft Center" : ($i === 5 ? "Bali’s Arjuna’s mask" : "Bali’s Statue Carving");
 
         // slug sederhana dari title
-        $slug = str($title)->lower()->replace(['’', '\'', '’s'], ['','', ''])->replace('  ', ' ')->replace(' ', '-');
+        $slug = str($title)->lower()->replace(['’', '\'', '’s'], ['', '', ''])->replace('  ', ' ')->replace(' ', '-');
 
         return [
             'badge' => 'HandCraft',
-            'image' => asset('images/explore-'.$i.'.jpg'), // siapin gambarnya
+            'image' => asset('images/explore-' . $i . '.jpg'), // siapin gambarnya
             'rating' => '4.9',
             'reviews' => '59 reviews',
             'title' => $title,
@@ -168,7 +211,7 @@ Route::get('/profile-umkm-page', function () {
         'url' => '#',
     ];
 
-    $featuredProducts = collect(range(1, 4))->map(fn ($i) => [
+    $featuredProducts = collect(range(1, 4))->map(fn($i) => [
         'title' => "Arjuna’s Mask",
         'price' => "Rp. 300.000",
         'image' => asset("images/product-$i.jpg"),
@@ -254,51 +297,50 @@ Route::get('/about-us', function () {
         'mission_left_image' => asset('images/about-mission-1.jpg'),
         'mission_right_image' => asset('images/about-mission-2.jpg'),
         'mission_cards' => [
-            ['tag'=>'Our mission', 'title'=>'Revitalizing Tradition for the Modern Era.', 'desc'=>'We help cultural products remain relevant through design, storytelling, and digital access.'],
-            ['tag'=>'Our mission', 'title'=>'Bridging Local Artisans to the Global Stage', 'desc'=>'We bring exposure to Balinese MSMEs so their works can be recognized widely.'],
+            ['tag' => 'Our mission', 'title' => 'Revitalizing Tradition for the Modern Era.', 'desc' => 'We help cultural products remain relevant through design, storytelling, and digital access.'],
+            ['tag' => 'Our mission', 'title' => 'Bridging Local Artisans to the Global Stage', 'desc' => 'We bring exposure to Balinese MSMEs so their works can be recognized widely.'],
         ],
 
         'stats_title' => 'Our impact',
         'stats_heading' => "Preserving Bali’s Cultural Heritage through modern connections.",
-        'stat_1' => ['num'=>'500+', 'label'=>'MSMEs are helped'],
-        'stat_2' => ['num'=>'1000+', 'label'=>'visitors feel happy'],
+        'stat_1' => ['num' => '500+', 'label' => 'MSMEs are helped'],
+        'stat_2' => ['num' => '1000+', 'label' => 'visitors feel happy'],
 
-        'impact_cards' => collect(range(1, 4))->map(fn ($i) => [
+        'impact_cards' => collect(range(1, 4))->map(fn($i) => [
             'image' => asset("images/explore-$i.jpg"),
             'badge' => 'HandCraft',
             'title' => $i === 2 ? "Bali’s Arjuna’s mask" : "Bali’s Statue Carving",
-            'rating'=> '4.9',
-            'author'=> 'Pande Sujana',
+            'rating' => '4.9',
+            'author' => 'Pande Sujana',
             'url'   => '#',
         ])->toArray(),
 
         'testi_title' => '1000+ visitors feel happy',
         'testimonials' => [
-            ['initials'=>'MA','name'=>'Made Ari','text'=>'The platform is amazing. It helps me discover authentic Balinese crafts and stories in one place.'],
-            ['initials'=>'KA','name'=>'Kadek Ayu','text'=>'Beautiful design and meaningful stories. I love how it connects culture with modern needs.'],
-            ['initials'=>'BP','name'=>'Bagus Putra','text'=>'As an artisan, I feel supported. My work gets exposure and customers understand my story.'],
+            ['initials' => 'MA', 'name' => 'Made Ari', 'text' => 'The platform is amazing. It helps me discover authentic Balinese crafts and stories in one place.'],
+            ['initials' => 'KA', 'name' => 'Kadek Ayu', 'text' => 'Beautiful design and meaningful stories. I love how it connects culture with modern needs.'],
+            ['initials' => 'BP', 'name' => 'Bagus Putra', 'text' => 'As an artisan, I feel supported. My work gets exposure and customers understand my story.'],
         ],
 
         'values_title' => 'Our vision',
         'values_heading' => 'What Drives Us.',
         'values' => [
-            ['title'=>'Quality', 'desc'=>'We prioritize authenticity and craftsmanship in every product and story.'],
-            ['title'=>'Quality', 'desc'=>'We ensure every MSME receives fair exposure and sustainable growth.'],
-            ['title'=>'Quality', 'desc'=>'We connect culture with modern audiences in a respectful way.'],
-            ['title'=>'Quality', 'desc'=>'We focus on community impact for artisans and local families.'],
+            ['title' => 'Quality', 'desc' => 'We prioritize authenticity and craftsmanship in every product and story.'],
+            ['title' => 'Quality', 'desc' => 'We ensure every MSME receives fair exposure and sustainable growth.'],
+            ['title' => 'Quality', 'desc' => 'We connect culture with modern audiences in a respectful way.'],
+            ['title' => 'Quality', 'desc' => 'We focus on community impact for artisans and local families.'],
         ],
 
         'team_title' => 'Our team',
         'team' => [
-    ['name'=>'Risky', 'role'=>'Crypto analisis', 'tag1'=>'Crypto analisis', 'tag2'=>'Team member', 'image'=>asset('images/team-1.jpg')],
-    ['name'=>'Surya', 'role'=>'Crypto analisis', 'tag1'=>'Crypto analisis', 'tag2'=>'Team member', 'image'=>asset('images/team-2.jpg')],
-    ['name'=>'Pamji', 'role'=>'Crypto analisis', 'tag1'=>'Crypto analisis', 'tag2'=>'Team member', 'image'=>asset('images/team-3.jpg')],
-    ['name'=>'Gung Jaya', 'role'=>'Crypto analisis', 'tag1'=>'Crypto analisis', 'tag2'=>'Team member', 'image'=>asset('images/team-4.jpg')],
-    ['name'=>'Ardi', 'role'=>'Crypto analisis', 'tag1'=>'Crypto analisis', 'tag2'=>'Team member', 'image'=>asset('images/team-5.jpg')],
-],
+            ['name' => 'Risky', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-1.jpg')],
+            ['name' => 'Surya', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-2.jpg')],
+            ['name' => 'Pamji', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-3.jpg')],
+            ['name' => 'Gung Jaya', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-4.jpg')],
+            ['name' => 'Ardi', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-5.jpg')],
+        ],
 
     ];
 
     return view('pages.about-us', compact('about'));
 })->name('about.us');
-

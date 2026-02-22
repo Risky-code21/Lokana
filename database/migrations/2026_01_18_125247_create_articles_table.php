@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('category_id')->constrained('category_articles')->onDelete('cascade');
             $table->string('slug')->unique();
+            $table->enum('status', ['publish', 'draft']);
             $table->string('short_description');
             $table->text('content');
         });
