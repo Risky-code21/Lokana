@@ -23,7 +23,8 @@
             <a href="{{ route('articles.index') }}"
                 class="text-gray-600 hover:text-primary-main font-medium transition">Articles</a>
             <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">Explore</a>
-            <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">FAQ</a>
+            <a href="{{ route('faq.index') }}"
+                class="text-gray-600 hover:text-primary-main font-medium transition">FAQ</a>
             <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">About us</a>
         </nav>
 
@@ -84,9 +85,6 @@
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-main">My
                             Profile</a>
                         <a href="#"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-main">Saved
-                            Articless</a>
-                        <a href="#"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-main">Settings</a>
 
                         <div class="border-t border-gray-100 my-1"></div>
@@ -140,7 +138,8 @@
             <a href="{{ route('articles.index') }}"
                 class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Articles</a>
             <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Explore</a>
-            <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">FAQ</a>
+            <a href="{{ route('faq.index') }}"
+                class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">FAQ</a>
             <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">About
                 us</a>
         </div>
