@@ -39,12 +39,12 @@ trait HasLike
 
         if ($like) {
             $like->delete();
-            return true;
+            return false; // Artinya: Sekarang jadi TIDAK di-like
         } else {
             $this->likes()->create([
                 'user_id' => $userId
             ]);
-            return false;
+            return true; // Artinya: Sekarang jadi DI-LIKE
         }
     }
 

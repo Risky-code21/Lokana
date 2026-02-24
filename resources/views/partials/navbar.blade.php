@@ -81,10 +81,10 @@
                             <p class="text-sm font-bold text-gray-800 truncate">{{ Auth::user()->email }}</p>
                         </div>
 
-                        <a href="#"
+                        <a href="{{ route('profiles.index') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-main">My
                             Profile</a>
-                        <a href="#"
+                        <a href="{{ route('profiles.index', ['tab' => 'settings']) }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-main">Settings</a>
 
                         <div class="border-t border-gray-100 my-1"></div>
@@ -173,8 +173,10 @@
                         </div>
                     </div>
 
-                    <a href="#" class="block text-sm text-gray-600 py-1 hover:text-primary-main">My Profile</a>
-                    <a href="#" class="block text-sm text-gray-600 py-1 hover:text-primary-main">Settings</a>
+                    <a href="{{ route('profiles.index') }}"
+                        class="block text-sm text-gray-600 py-1 hover:text-primary-main">My Profile</a>
+                    <a href="{{ route('profiles.index', ['tab' => 'settings']) }}"
+                        class="block text-sm text-gray-600 py-1 hover:text-primary-main">Settings</a>
 
                     <form method="POST" action="{{ route('register.index') }}"
                         class="py-2 border-t border-gray-200 mt-2">

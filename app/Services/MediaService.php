@@ -74,10 +74,6 @@ class MediaService
 
         foreach ($model->medias as $media) {
             $media->delete(); // Hapus link gambar ke artikel ini
-
-            Storage::delete($media);
-            // Opsional: Cek apakah gambar ini dipakai artikel lain?
-            // Jika tidak ada yang pakai, baru hapus fisik (Storage::delete).
         }
 
         return true;

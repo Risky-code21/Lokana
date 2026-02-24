@@ -3,6 +3,7 @@
 use App\Http\Controllers\User\ArticleController;
 use App\Http\Controllers\User\LikeController;
 use App\Http\Controllers\User\CommentController;
+use App\Http\Controllers\User\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Landing page (1 route saja, jangan dobel)
@@ -62,32 +63,7 @@ Route::get('/profile', function () {
 // Route untuk faq page
 // Tidak di group secara khusus karena tidak memiliki fitur khusus seperti artikel, komentar, dll. Jadi cukup satu route saja untuk menampilkan halaman FAQ statis.
 Route::get('/faq', function () {
-
-    $faqs = [
-        'General Question' => [
-            [
-                'q' => 'What is Lokana',
-                'a' => 'Lokana is a digital platform focused on empowering Balinese MSMEs and artisans by showcasing the stories, cultural values, and creative processes behind each handcrafted product. Through a storytelling-driven approach, Lokana helps local creators introduce their works to the global market in an authentic and sustainable way. The platform not only serves as a promotional medium, but also as a cultural bridge that offers consumers a more meaningful experience by connecting Balinese heritage, craftsmanship, and contemporary market demands.',
-            ],
-            ['q' => 'How does Lokana work?', 'a' => 'You can explore products, read stories, connect with artisans, and place orders directly through the platform.'],
-            ['q' => 'Is Lokana free to use?', 'a' => 'Yes, browsing stories and products is free. Certain features may require an account.'],
-            ['q' => 'How to become an UMKM partner?', 'a' => 'Register as UMKM, complete profile, and submit your product listing.'],
-        ],
-        'Ordering & payment' => [
-            ['q' => 'How to place an order?', 'a' => 'Choose a product, click order, and follow the checkout instructions.'],
-            ['q' => 'What payment methods are available?', 'a' => 'Bank transfer, e-wallet, and other available payment gateways (depending on your integration).'],
-            ['q' => 'Can I cancel an order?', 'a' => 'You can cancel before the seller confirms. After confirmation, follow the return policy.'],
-            ['q' => 'How long does shipping take?', 'a' => 'Shipping time depends on location and courier. Estimated time will appear at checkout.'],
-        ],
-        'For artisans' => [
-            ['q' => 'How to join as an artisan?', 'a' => 'Sign up, complete artisan profile, and upload your products with photos and descriptions.'],
-            ['q' => 'How do I get featured?', 'a' => 'Maintain good ratings, complete profile, and consistently upload high-quality products.'],
-            ['q' => 'Do you charge platform fees?', 'a' => 'Platform fees depend on partnership plan. You can contact us for details.'],
-            ['q' => 'Can I tell my story?', 'a' => 'Yes, you can publish stories/articles to help customers understand your craftsmanship.'],
-        ],
-    ];
-
-    return view('pages.user.faq.faq-page', compact('faqs'));
+    return view('pages.user.faq.faq-page');
 })->name('faq.index');
 
 // Route untuk menu article
@@ -105,7 +81,7 @@ Route::controller(ArticleController::class)->prefix('articles')->name('articles.
 // Pengguna yang ingin berkomentar atau mereply suatu komentar harus lah pengguna yang sudah terautentikas
 // Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
 // Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
-Route::middleware('auth')->prefix('comments')->name('comments.')->controller(CommentController::class)->group(function () {
+Route::middleware(['auth', 'checkrole:user'])->prefix('comments')->name('comments.')->controller(CommentController::class)->group(function () {
 
     // Upload komentar
     Route::post('/{type}/{slug}', 'store')
@@ -124,10 +100,26 @@ Route::middleware('auth')->prefix('comments')->name('comments.')->controller(Com
 // Pengguna yang ingin meemberikan like harus login terlebih dahulu
 // Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
 // Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
-Route::middleware('auth')->prefix('likes')->name('likes.')->controller(LikeController::class)->group(function () {
+Route::middleware(['auth', 'checkrole:user'])->prefix('likes')->name('likes.')->controller(LikeController::class)->group(function () {
 
     Route::post('/{type}/{slug}', 'toggle')
         ->name('toggle');
+});
+
+
+// Route untuk fitur profile user
+// Pengguna yang ingin mengakses halaman profile harus login terlebih dahulu
+// Menggunakan group route, agar route perfitur lebih terorganisir dengan baik
+// Digroup bedasarkan middleware, prefix, name, dan controller dari fitur
+Route::middleware(['auth', 'checkrole:user'])->prefix('profiles')->name('profiles.')->controller(ProfileController::class)->group(function () {
+
+    Route::get('/', 'index')->name('index');
+
+    Route::patch('/identity', 'updateIdentity')->name('update.identity');
+
+    Route::put('/security', 'updateSecurity')->name('update.security');
+
+    Route::delete('/delete-account', 'destroy')->name('delete.account');
 });
 
 // Testing fitur admin versi cepat

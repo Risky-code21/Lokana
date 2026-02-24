@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
     ];
 
     /**
@@ -51,20 +52,20 @@ class User extends Authenticatable
     /**
      *  Casting profile user, jika tidak ada foto yang tersedia atau diupload dari sisi user
      *
-     *  @return Attribute
+     *  @return void
      */
-    protected function avatarUrl(): Attribute
+    protected static function booted(): void
     {
-        return Attribute::make(
-            get: function () {
-                // Asumsikan Anda punya kolom 'avatar' di table users
-                if ($this->avatar && file_exists(storage_path('app/public/' . $this->avatar))) {
-                    return asset('storage/' . $this->avatar);
-                }
+        static::creating(function (User $user) {
+            // Jika saat registrasi user tidak membawa file avatar, otomatis isi kolom avatar
+            if (empty($user->avatar)) {
+                $user->avatar = "https://ui-avatars.com/api/?name=" . urlencode($user->name);
+            }
+        });
+    }
 
-                // Fallback ke CDN UI-Avatars menggunakan inisial nama
-                return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&background=random&color=fff";
-            },
-        );
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 }

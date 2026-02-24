@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\AuthUserRequest;
 use App\Services\AuthService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -54,7 +55,7 @@ class AuthController extends Controller
             if ($user->role == 'admin') {
                 return redirect()->intended('admin/dashboard');
             }
-            return redirect()->intended('landing-page');
+            return redirect()->intended('/');
         }
         // Lempar kembali agar ditangani otomatis oleh Handler Laravel
         // (Akan otomatis redirect back dengan pesan error asli)

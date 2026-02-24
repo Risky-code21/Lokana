@@ -7,22 +7,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class RoleMiddleware
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $role): Response
     {
         if (!Auth::check()) {
             return redirect('login');
         }
 
-        if (Auth::user()->role != 'admin') {
-            return abort(403, 'anda tidak memiliki hak untuk mengakses halaman ini');
+        if (Auth::check() && Auth::user()->role === $role) {
+            return $next($request);
         }
-        return $next($request);
+
+        return abort(403, 'You do not have the right to access this page');
     }
 }
