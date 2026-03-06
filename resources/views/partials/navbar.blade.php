@@ -25,7 +25,8 @@
             <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">Explore</a>
             <a href="{{ route('faq.index') }}"
                 class="text-gray-600 hover:text-primary-main font-medium transition">FAQ</a>
-            <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">About us</a>
+            <a href="{{ route('about.us') }}" class="text-gray-600 hover:text-primary-main font-medium transition">About
+                us</a>
         </nav>
 
         {{-- 3. RIGHT SECTION (Auth Logic) --}}
@@ -140,7 +141,8 @@
             <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Explore</a>
             <a href="{{ route('faq.index') }}"
                 class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">FAQ</a>
-            <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">About
+            <a href="{{ route('about.us') }}"
+                class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">About
                 us</a>
         </div>
 
