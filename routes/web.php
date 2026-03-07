@@ -3,62 +3,12 @@
 use App\Http\Controllers\User\ArticleController;
 use App\Http\Controllers\User\LikeController;
 use App\Http\Controllers\User\CommentController;
+use App\Http\Controllers\User\LandingPageController;
 use App\Http\Controllers\User\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Landing page (1 route saja, jangan dobel)
-Route::get('/', function () {
-    $stats = [
-        'umkm' => '100+',
-        'products' => '500+',
-        'happy' => '1000+',
-        'rating' => '5',
-    ];
-
-    $products = collect(range(1, 6))->map(fn($i) => [
-        'image' => asset('images/product-' . $i . '.jpg'),
-        'category' => 'HandCraft',
-        'title' => "Bali’s Art #$i",
-        'seller' => 'Pande Jagatama',
-        'count' => 37,
-        'desc' => 'Produk lokal khas Bali yang dibuat oleh UMKM dengan kualitas terbaik.',
-        'rating' => '5.0',
-        'url' => '#',
-    ])->toArray();
-
-    $works = collect(range(1, 6))->map(fn($i) => [
-        'image' => asset('images/work-' . $i . '.jpg'),
-        'title' => 'Arjuna Mask',
-        'desc' => 'Topeng tradisional Bali yang dibuat secara handmade oleh pengrajin lokal.',
-        'price' => 'Rp. 300.000',
-        'url' => '#',
-    ])->toArray();
-
-    $articles = collect(range(1, 3))->map(fn($i) => [
-        'image' => asset('images/article-' . $i . '.jpg'),
-        'title' => 'Article Name',
-        'excerpt' => 'Cerita singkat tentang UMKM lokal dan produk-produk tradisional Bali.',
-        'url' => '#',
-    ])->toArray();
-
-    return view('pages.landing_page', compact('stats', 'products', 'works', 'articles'));
-})->name('landing-page');
-
-// Profile page
-Route::get('/profile', function () {
-    // dummy data (nanti bisa diganti dari DB)
-    $user = [
-        'name' => 'Yayayaahaha',
-        'role' => 'Owner MSME',
-        'location' => 'Jln. Kartini',
-        'joined' => '19 Januari 2025',
-        'avatar' => asset('images/avatar.jpg'),      // siapkan gambarnya (atau ganti)
-        'cover'  => asset('images/cover.jpg'),       // siapkan gambarnya (atau ganti)
-        'completion' => 50,
-    ];
-
-    return view('pages.profile-page', compact('user'));
-})->name('profile');
+// Landing page
+Route::get('/',  [LandingPageController::class, 'index'])->name('landing-page');
 
 // Route untuk faq page
 // Tidak di group secara khusus karena tidak memiliki fitur khusus seperti artikel, komentar, dll. Jadi cukup satu route saja untuk menampilkan halaman FAQ statis.
@@ -280,61 +230,5 @@ Route::get('/profile-umkm-page', function () {
 
 // ✅ About Us page
 Route::get('/about-us', function () {
-
-    $about = [
-        'hero_title' => "Preserving Bali’s Cultural Heritage through modern connections.",
-        'hero_desc'  => "Lokana helps connect local artisans and MSMEs to broader audiences through meaningful stories, culture, and products.",
-        'hero_image' => asset('images/about-hero.png'),
-
-        'mission_title' => 'Our mission',
-        'mission_heading' => "Preserving Bali’s Cultural Heritage through modern connections.",
-        'mission_left_image' => asset('images/about-mission-1.jpg'),
-        'mission_right_image' => asset('images/about-mission-2.jpg'),
-        'mission_cards' => [
-            ['tag' => 'Our mission', 'title' => 'Revitalizing Tradition for the Modern Era.', 'desc' => 'We help cultural products remain relevant through design, storytelling, and digital access.'],
-            ['tag' => 'Our mission', 'title' => 'Bridging Local Artisans to the Global Stage', 'desc' => 'We bring exposure to Balinese MSMEs so their works can be recognized widely.'],
-        ],
-
-        'stats_title' => 'Our impact',
-        'stats_heading' => "Preserving Bali’s Cultural Heritage through modern connections.",
-        'stat_1' => ['num' => '500+', 'label' => 'MSMEs are helped'],
-        'stat_2' => ['num' => '1000+', 'label' => 'visitors feel happy'],
-
-        'impact_cards' => collect(range(1, 4))->map(fn($i) => [
-            'image' => asset("images/explore-$i.jpg"),
-            'badge' => 'HandCraft',
-            'title' => $i === 2 ? "Bali’s Arjuna’s mask" : "Bali’s Statue Carving",
-            'rating' => '4.9',
-            'author' => 'Pande Sujana',
-            'url'   => '#',
-        ])->toArray(),
-
-        'testi_title' => '1000+ visitors feel happy',
-        'testimonials' => [
-            ['initials' => 'MA', 'name' => 'Made Ari', 'text' => 'The platform is amazing. It helps me discover authentic Balinese crafts and stories in one place.'],
-            ['initials' => 'KA', 'name' => 'Kadek Ayu', 'text' => 'Beautiful design and meaningful stories. I love how it connects culture with modern needs.'],
-            ['initials' => 'BP', 'name' => 'Bagus Putra', 'text' => 'As an artisan, I feel supported. My work gets exposure and customers understand my story.'],
-        ],
-
-        'values_title' => 'Our vision',
-        'values_heading' => 'What Drives Us.',
-        'values' => [
-            ['title' => 'Quality', 'desc' => 'We prioritize authenticity and craftsmanship in every product and story.'],
-            ['title' => 'Quality', 'desc' => 'We ensure every MSME receives fair exposure and sustainable growth.'],
-            ['title' => 'Quality', 'desc' => 'We connect culture with modern audiences in a respectful way.'],
-            ['title' => 'Quality', 'desc' => 'We focus on community impact for artisans and local families.'],
-        ],
-
-        'team_title' => 'Our team',
-        'team' => [
-            ['name' => 'Risky', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-1.jpg')],
-            ['name' => 'Surya', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-2.jpg')],
-            ['name' => 'Pamji', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-3.jpg')],
-            ['name' => 'Gung Jaya', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-4.jpg')],
-            ['name' => 'Ardi', 'role' => 'Crypto analisis', 'tag1' => 'Crypto analisis', 'tag2' => 'Team member', 'image' => asset('images/team-5.jpg')],
-        ],
-
-    ];
-
-    return view('pages.about-us', compact('about'));
+    return view('pages.about-us');
 })->name('about.us');
