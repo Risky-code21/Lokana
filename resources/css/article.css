@@ -1,0 +1,54 @@
+/* Styling custom untuk content article lokana dengan */
+
+@layer components {
+    /* 1. Base Text & Paragraphs */
+    .lokana-article-content {
+        @apply text-gray-700 leading-relaxed text-base;
+    }
+    .lokana-article-content p {
+        @apply mb-5;
+    }
+
+    /* 2. Headings (Gaya Serif Elegan) */
+    .lokana-article-content h1,
+    .lokana-article-content h2,
+    .lokana-article-content h3 {
+        @apply font-serif text-gray-900 font-medium mb-4 mt-10 leading-snug tracking-wide;
+    }
+    .lokana-article-content h1 {
+        @apply text-4xl;
+    }
+    .lokana-article-content h2 {
+        @apply text-3xl;
+    }
+    .lokana-article-content h3 {
+        @apply text-2xl;
+    }
+
+    /* 3. Froala Images */
+    .lokana-article-content img,
+    .lokana-article-content .fr-fic {
+        @apply rounded-2xl shadow-sm my-8 mx-auto object-cover;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* 4. Lists */
+    .lokana-article-content ol {
+        @apply list-decimal pl-5 mb-6 space-y-2;
+    }
+    .lokana-article-content ul {
+        @apply list-disc pl-5 mb-6 space-y-2;
+    }
+    .lokana-article-content li {
+        @apply text-gray-700;
+    }
+
+    /* 5. Highlight Box */
+    .lokana-article-content blockquote {
+        @apply text-gray-800 py-4 px-6 border-l-4 border-primary-main bg-surface-low rounded-xl my-8;
+    }
+    .lokana-article-content blockquote p {
+        @apply mb-0;
+    }
+}

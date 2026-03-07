@@ -1,11 +1,189 @@
-@import 'tailwindcss';
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* 
+    Google fonts yang terdiri dari font: Cormorant, Poppins, Work Sans 
+*/
+@import url("https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300..700;1,300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+@import "./article.css";
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    /* CoLor custom */
+    /* 
+        Warna latar belakang untuk elemen-elemen UI seperti kartu, panel, dan area konten
+    */
+    --color-surface-high: #f6f4f0;
+    --color-surface-medium: #eae2d7;
+    --color-surface-low: #d6c7b2;
+
+    /* 
+        Warna primary untuk tombol, link, dan elemen interaktif lainnya
+    */
+    --color-primary-main: #5d4037;
+    --color-primary-light: #9d7655;
+    --color-primary-border: #ac8b63;
+
+    /* 
+        Warna teks untuk heading, body, dan secondary text
+     */
+    --color-text-black: #2e1d1a;
+    --color-text-body: #513b32;
+    --color-text-secondary: #6c4a3c;
+    --color-on-primary: #f6f4f0;
+
+    /* 
+        Warna status untuk DOM elements 
+     */
+    --color-state-hover: #6c4a3c;
+    --color-state-active: #513b32;
+    --color-state-disabled: #bfa585;
+    --color-state-focus: #d4a373;
+
+    /* Font custom */
+    --font-heading: "Cormorant", serif;
+    --font-paragraph: "Work Sans", sans-serif;
+    --font-admin: "Poppins", sans-serif;
+
+    /* Font size custom */
+    --text-xs: 0.75rem; /* 12px */
+    --text-sm: 0.875rem; /* 14px */
+    --text-base: 1rem; /* 16px */
+    --text-lg: 1.125rem; /* 18px */
+    --text-xl: 1.25rem; /* 20px */
+    --text-2xl: 1.5rem; /* 24px */
+    --text-3xl: 1.875rem; /* 30px */
+    --text-4xl: 2.25rem; /* 36px */
+    --text-5xl: 3rem; /* 48px */
+    --text-6xl: 3.75rem; /* 60px */
+    --text-7xl: 4.5rem; /* 72px */
+    --text-8xl: 6rem; /* 96px */
+    --text-9xl: 8rem; /* 128px */
+
+    /* Line Heights custom */
+    --leading-tight: 1.25;
+    --leading-normal: 1.5;
+    --leading-none: 1;
+
+    /* Radius custom */
+    --radius-card: 1.5rem;
+    --radius-btn: 0.75rem;
+    --radius-badge: 0.5rem;
+}
+
+@layer base {
+    html {
+        @apply scroll-smooth;
+    }
+    /* 
+        Style heading custom
+     */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading text-black font-semibold;
+    }
+
+    /* 
+        Line height custom
+     */
+    h1,
+    h2,
+    h3 {
+        @apply leading-tight;
+    }
+
+    h4,
+    h5,
+    h6 {
+        @apply leading-snug;
+    }
+
+    /* 
+        Font size heading custom
+     */
+    h1 {
+        @apply text-4xl md:text-6xl;
+    }
+
+    h2 {
+        @apply text-2xl md:text-4xl;
+    }
+
+    h3 {
+        @apply text-xl md:text-2xl;
+    }
+
+    h4 {
+        @apply text-lg md:text-xl;
+    }
+
+    h5 {
+        @apply text-base md:text-lg;
+    }
+
+    h6 {
+        @apply text-sm md:text-base;
+    }
+
+    p {
+        @apply text-black font-paragraph text-sm;
+        @apply leading-relaxed;
+        @apply mb-2;
+    }
+
+    /* 
+        Style custom button, input dan label
+    */
+    button,
+    input,
+    label {
+        @apply leading-none font-paragraph;
+    }
+
+    /* 
+        Style custom a
+     */
+    a {
+        @apply text-primary-main font-medium transition-colors underline-offset-2 duration-200 cursor-pointer;
+    }
+
+    a:hover {
+        @apply text-primary-light;
+    }
+}
+
+@layer components {
+    .error-status-primary {
+        @apply text-sm rounded-btn border border-red-600 bg-red-200 text-red-600 px-4 py-2 gap-2 flex items-center;
+    }
+    .form-auth {
+        @apply w-full max-w-md p-4 md:p-8 md:bg-surface-high rounded-card md:shadow-md;
+    }
+
+    .input-form-primary,
+    .text-area-form-primary {
+        @apply p-4 border font-paragraph text-sm border-primary-border w-full rounded-btn focus:outline-primary-border bg-white placeholder:text-primary-main;
+    }
+    .btn,
+    .btn-primary,
+    .btn-secondary .btn-outline {
+        @apply inline-flex p-4 gap-2 items-center justify-center transition-all duration-200 cursor-pointer font-medium disabled:opacity-50 disabled:cursor-not-allowed rounded-btn select-none;
+    }
+
+    .btn-primary {
+        @apply shadow-sm bg-primary-main text-on-primary;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        @apply bg-state-hover -translate-y-[1px];
+    }
+
+    .btn-primary:active:not(:disabled) {
+        @apply translate-y-0;
+    }
+
+    .btn-outline {
+        @apply bg-transparent border border-primary-border text-black;
+    }
 }
