@@ -19,14 +19,29 @@
         {{-- 2. DESKTOP NAVIGATION (Tengah) --}}
         <nav class="hidden lg:flex mx-auto items-center gap-8">
             <a href="{{ route('landing-page') }}"
-                class="text-gray-600 hover:text-primary-main font-medium transition">Home</a>
+                class="{{ Route::is('landing-page') ? 'text-primary-main font-semibold' : 'text-gray-600' }} hover:text-primary-main font-medium transition">
+                Home
+            </a>
+
             <a href="{{ route('articles.index') }}"
-                class="text-gray-600 hover:text-primary-main font-medium transition">Articles</a>
-            <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">Explore</a>
+                class="{{ Route::is('articles.*') ? 'text-primary-main font-semibold' : 'text-gray-600' }} hover:text-primary-main font-medium transition">
+                Articles
+            </a>
+
+            {{-- Contoh jika Explore belum ada route name --}}
+            <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition">
+                Explore
+            </a>
+
             <a href="{{ route('faq.index') }}"
-                class="text-gray-600 hover:text-primary-main font-medium transition">FAQ</a>
-            <a href="{{ route('about.us') }}" class="text-gray-600 hover:text-primary-main font-medium transition">About
-                us</a>
+                class="{{ Route::is('faq.*') ? 'text-primary-main font-semibold' : 'text-gray-600' }} hover:text-primary-main font-medium transition">
+                FAQ
+            </a>
+
+            <a href="{{ route('about.us') }}"
+                class="{{ Route::is('about.us') ? 'text-primary-main font-semibold' : 'text-gray-600' }} hover:text-primary-main font-medium transition">
+                About us
+            </a>
         </nav>
 
         {{-- 3. RIGHT SECTION (Auth Logic) --}}
@@ -135,15 +150,29 @@
 
         <div class="p-4 space-y-6">
             <a href="{{ route('landing-page') }}"
-                class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Home</a>
+                class="{{ Route::is('landing-page') ? 'text-primary-main font-semibold' : 'text-gray-600' }} hover:text-primary-main font-medium transition block">
+                Home
+            </a>
+
             <a href="{{ route('articles.index') }}"
-                class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Articles</a>
-            <a href="#" class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">Explore</a>
+                class="{{ Route::is('articles.*') ? 'text-primary-main font-semibold' : 'text-gray-600' }} hover:text-primary-main font-medium transition block">
+                Articles
+            </a>
+
+            {{-- Contoh jika Explore belum ada route name --}}
+            <a href="#" class="text-gray-600 hover:text-primary-main font-medium transition block">
+                Explore
+            </a>
+
             <a href="{{ route('faq.index') }}"
-                class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">FAQ</a>
+                class="{{ Route::is('faq.*') ? 'text-primary-main font-semibold' : 'text-gray-600' }} hover:text-primary-main font-medium transition block">
+                FAQ
+            </a>
+
             <a href="{{ route('about.us') }}"
-                class="block  rounded-md text-gray-600 hover:text-primary-main font-medium">About
-                us</a>
+                class="{{ Route::is('about.us') ? 'text-primary-main font-semibold' : 'text-gray-600' }} hover:text-primary-main font-medium transition block">
+                About us
+            </a>
         </div>
 
         <hr class="border-gray-100">
