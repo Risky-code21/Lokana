@@ -69,4 +69,42 @@ class AuthController extends Controller
             return redirect()->back()->withErrors(['error' => 'Login failed. Please try again.'])->withInput();
         }
     }
+    /**
+     *  @todo Function untuk melakukan logout user
+     *  dan menghapus session
+     *
+     *  @param Request $request
+     *  @return RedirectResponse
+     */
+    public function logout(Request $request): RedirectResponse
+    {
+        try {
+            // Log aktivitas logout (opsional)
+            Log::info('User logout: ' . Auth::user()->email . ' at ' . now());
+            
+            // Logout user
+            Auth::logout();
+            
+            // Invalidate session
+            $request->session()->invalidate();
+            
+            // Regenerate CSRF token
+            $request->session()->regenerateToken();
+            
+            // Redirect ke halaman login dengan pesan sukses
+            return redirect()->route('login')
+                ->with('success', 'Anda berhasil logout.');
+                
+        } catch (\Exception $e) {
+            Log::error('Logout error: ' . $e->getMessage());
+            
+            // Force logout jika terjadi error
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return redirect()->route('login')
+                ->with('error', 'Terjadi kesalahan saat logout.');
+        }
+    }
 }

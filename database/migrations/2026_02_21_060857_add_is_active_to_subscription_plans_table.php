@@ -1,0 +1,23 @@
+<?php
+// database/migrations/2026_02_21_xxxxxx_add_is_active_to_subscription_plans_table.php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('subscription_plans', function (Blueprint $table) {
+            $table->boolean('is_active')->default(true)->after('features');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('subscription_plans', function (Blueprint $table) {
+            $table->dropColumn('is_active');
+        });
+    }
+};

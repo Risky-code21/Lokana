@@ -1,62 +1,102 @@
 <?php
+// app/Models/UmkmProfile.php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class UmkmProfile extends Model
 {
-    /** @use HasFactory<\Database\Factories\UmkmProfileFactory> */
-    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'umkm_profiles';
 
     protected $fillable = [
-        'name',
-        'slug',
-        'short_text',
-        'full_text',
-        'address',
-        'latitude',
-        'longitude'
+        'name', 'slug', 'pelaku_umkm', 'nama_pemilik', 'tahun_berdiri',
+        'category_id', 'instagram_link', 'whatsapp_number', 'contact_person_name',
+        'contact_person_phone', 'email_umkm', 'website', 'facebook_link',
+        'twitter_link', 'tiktok_link', 'short_description', 'content',
+        'address', 'province', 'city', 'district', 'village', 'postal_code',
+        'latitude', 'longitude', 'logo', 'thumbnail', 'gallery_images',
+        'meta_title', 'meta_description', 'meta_keywords',
+        'subscription_plan_id', 'payment_proof', 'subscription_start_date',
+        'subscription_end_date', 'subscription_status', 'verification_status',
+        'profile_status', 'is_featured', 'views_count', 'admin_notes',
+        'verified_at', 'verified_by'
     ];
 
-    public function owner()
+    protected $casts = [
+        'gallery_images' => 'array',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
+        'tahun_berdiri' => 'integer',
+        'is_featured' => 'boolean',
+        'subscription_start_date' => 'datetime',
+        'subscription_end_date' => 'datetime',
+        'verified_at' => 'datetime',
+    ];
+
+    protected static function boot()
     {
-        return $this->hasMany(User::class, 'owner_id');
+        parent::boot();
+        static::creating(function ($profile) {
+            if (empty($profile->slug)) {
+                $profile->slug = Str::slug($profile->name);
+            }
+        });
     }
 
+    // Relationships
     public function category()
     {
-        return $this->belongsTo(Category_umkm::class, 'category_id');
+        return $this->belongsTo(CategoryUmkm::class, 'category_id');
     }
 
-    public function products()
+    /**
+     * Relasi ke PelakuUmkm - PERBAIKAN INI
+     * foreign key: pelaku_umkm (di tabel umkm_profiles)
+     * owner key: id (di tabel pelaku_umkms)
+     */
+    public function owner()
     {
-        return $this->hasMany(Product_umkm::class, 'umkm_id');
+        return $this->belongsTo(PelakuUmkm::class, 'pelaku_umkm', 'id');
     }
 
-    public function views()
+    public function subscriptionPlan()
     {
-        return $this->morphMany(View::class, 'viewable');
+        return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
     }
 
-    public function reviews()
+    public function verifiedBy()
     {
-        return $this->morphMany(Comment::class, 'commentable');
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
-    public function photos()
+    // Scopes
+    public function scopeActive($query)
     {
-        return $this->morphMany(Media::class, 'mediable');
+        return $query->where('profile_status', 'published')
+                     ->where('subscription_status', 'active')
+                     ->where('subscription_end_date', '>', now());
     }
 
-    public function activeSubscription()
+    public function scopePending($query)
     {
-        return $this->hasOne(Subscription::class, 'umkm_id')
-            ->where('status', 'active')
-            ->where('expires_at', '>', now())
-            ->latestOfMany();
+        return $query->where('profile_status', 'pending');
+    }
+
+    // Accessors
+    public function getFullAddressAttribute()
+    {
+        return implode(', ', array_filter([
+            $this->address,
+            $this->village,
+            $this->district,
+            $this->city,
+            $this->province,
+            $this->postal_code
+        ]));
     }
 }
