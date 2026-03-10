@@ -12,8 +12,6 @@ use App\Http\Controllers\Admin\CategoryArticleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingsController;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 Route::middleware(['auth', 'checkrole:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         return view('pages.admin.dashboard');
@@ -33,12 +31,10 @@ Route::middleware(['auth', 'checkrole:admin'])->prefix('admin')->name('admin.')-
     Route::post('articles/upload-media', [ArticleController::class, 'uploadFromEditor'])
         ->name('articles.upload_media');
 });
-=======
-=======
 
->>>>>>> 2b535ce (feat: subplan & subscription)
+
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    
+
     // Dashboard
     Route::get('/dashboard', function () {
         return view('pages.admin.dashboard');
@@ -56,7 +52,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/{pelaku_umkm}', [PelakuUmkmController::class, 'destroy'])->name('destroy');
         Route::post('/bulk-destroy', [PelakuUmkmController::class, 'bulkDestroy'])->name('bulk-destroy');
     });
-    
+
     // ================= CATEGORY UMKM =================
     Route::prefix('category-umkm')->name('category-umkm.')->group(function () {
         Route::get('/', [CategoryUmkmController::class, 'index'])->name('index');
@@ -66,14 +62,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/{category_umkm}/edit', [CategoryUmkmController::class, 'edit'])->name('edit');
         Route::put('/{category_umkm}', [CategoryUmkmController::class, 'update'])->name('update');
         Route::delete('/{category_umkm}', [CategoryUmkmController::class, 'destroy'])->name('destroy');
-        
+
         // Bulk delete
         Route::post('/bulk-destroy', [CategoryUmkmController::class, 'bulkDestroy'])->name('bulk-destroy');
-        
+
         // For select dropdown
         Route::get('/select-options', [CategoryUmkmController::class, 'getCategories'])->name('select-options');
     });
-    
+
     // ================= UMKM PROFILES ================= (GUNAKAN YANG INI, LENGKAP)
     Route::prefix('umkm-profiles')->name('umkm-profiles.')->group(function () {
         Route::get('/', [UmkmProfileController::class, 'index'])->name('index');
@@ -83,20 +79,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{umkmProfile}', [UmkmProfileController::class, 'update'])->name('update');
         Route::delete('/{umkmProfile}', [UmkmProfileController::class, 'destroy'])->name('destroy');
         Route::get('/{umkmProfile}', [UmkmProfileController::class, 'show'])->name('show');
-        
+
         // Additional routes
         Route::get('/trash', [UmkmProfileController::class, 'trash'])->name('trash');
         Route::post('/bulk-delete', [UmkmProfileController::class, 'bulkDelete'])->name('bulk-delete');
-        
+
         // Status routes
         Route::post('/{umkmProfile}/verify', [UmkmProfileController::class, 'verify'])->name('verify');
         Route::post('/{umkmProfile}/reject', [UmkmProfileController::class, 'reject'])->name('reject');
         Route::post('/{umkmProfile}/toggle-featured', [UmkmProfileController::class, 'toggleFeatured'])->name('toggle-featured');
-        
+
         // Trash restore & force delete
         Route::post('/{id}/restore', [UmkmProfileController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [UmkmProfileController::class, 'forceDelete'])->name('force-delete');
-    
+
         // For select dropdown (tambahkan jika perlu)
         Route::get('/select-options', [UmkmProfileController::class, 'getProfiles'])->name('select-options');
     });
@@ -123,11 +119,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/msme-products', function () {
         return "MSME Products - Coming Soon";
     })->name('msme-products.index');
-    
+
     Route::get('/articles', function () {
         return "Articles - Coming Soon";
     })->name('articles.index');
-    
+
     // ================= ARTICLE CATEGORIES =================
     Route::prefix('article-categories')->name('article-categories.')->group(function () {
         Route::get('/', [CategoryArticleController::class, 'index'])->name('index');
@@ -137,25 +133,25 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/{category_article}/edit', [CategoryArticleController::class, 'edit'])->name('edit');
         Route::put('/{category_article}', [CategoryArticleController::class, 'update'])->name('update');
         Route::delete('/{category_article}', [CategoryArticleController::class, 'destroy'])->name('destroy');
-        
+
         // Bulk delete
         Route::post('/bulk-destroy', [CategoryArticleController::class, 'bulkDestroy'])->name('bulk-destroy');
-        
+
         // For select dropdown
         Route::get('/select-options', [CategoryArticleController::class, 'getCategories'])->name('select-options');
     });
-    
+
     Route::get('/reports', function () {
         return "Reports - Coming Soon";
     })->name('reports.index');
-    
+
     // ================= SETTINGS =================
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('index');
         Route::post('/profile', [SettingsController::class, 'updateProfile'])->name('profile');
         Route::post('/password', [SettingsController::class, 'updatePassword'])->name('password');
     });
-    
+
     // ================= USERS MANAGEMENT =================
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
@@ -165,10 +161,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
-        
+
         // Bulk delete
         Route::post('/bulk-destroy', [UserController::class, 'bulkDestroy'])->name('bulk-destroy');
     });
-    
 });
->>>>>>> 4e89da7 (feat: artisan, msme category)
