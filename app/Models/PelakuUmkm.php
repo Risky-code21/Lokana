@@ -1,20 +1,18 @@
 <?php
+// app/Models/PelakuUmkm.php
 
 namespace App\Models;
 
-use BadFunctionCallException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PelakuUmkm extends Model
 {
-    /** @use HasFactory<\Database\Factories\PelakuUmkmFactory> */
     use HasFactory;
 
     protected $table = "pelaku_umkms";
 
     protected $fillable = [
-        'umkm_id',
         'name',
         'email',
         'phone',
@@ -22,12 +20,25 @@ class PelakuUmkm extends Model
     ];
 
     protected $casts = [
-        'created_at' => 'datetime:D M Y H:i',
-        'updated_at' => 'datetime:D M Y H:i',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    public function umkm_profiles()
+    /**
+     * Relasi ke UmkmProfile - PERBAIKAN INI
+     * foreign key: pelaku_umkm (di tabel umkm_profiles)
+     * local key: id (di tabel pelaku_umkms)
+     */
+    public function umkmProfiles()
     {
-        return $this->hasMany(UmkmProfile::class, 'owner_id');
+        return $this->hasMany(UmkmProfile::class, 'pelaku_umkm', 'id');
+    }
+
+    /**
+     * Relasi ke User (jika pelaku_umkm terhubung ke user)
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\Admin\ArticleController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UmkmProfileController;
 use App\Http\Controllers\Admin\PelakuUmkmController;
 use App\Http\Controllers\Admin\CategoryUmkmController;
-use App\Http\Controllers\Admin\UmkmProfileController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\CategoryArticleController;
@@ -42,7 +43,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', function () {
         return view('pages.admin.dashboard');
     })->name('dashboard');
-    
+
     // ================= PELAKU UMKM =================
     Route::prefix('pelaku-umkm')->name('pelaku-umkm.')->group(function () {
         Route::get('/', [PelakuUmkmController::class, 'index'])->name('index');
@@ -73,20 +74,30 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/select-options', [CategoryUmkmController::class, 'getCategories'])->name('select-options');
     });
     
-    // ================= UMKM PROFILES =================
+    // ================= UMKM PROFILES ================= (GUNAKAN YANG INI, LENGKAP)
     Route::prefix('umkm-profiles')->name('umkm-profiles.')->group(function () {
         Route::get('/', [UmkmProfileController::class, 'index'])->name('index');
         Route::get('/create', [UmkmProfileController::class, 'create'])->name('create');
         Route::post('/', [UmkmProfileController::class, 'store'])->name('store');
-        Route::get('/{umkmProfile}', [UmkmProfileController::class, 'show'])->name('show');
         Route::get('/{umkmProfile}/edit', [UmkmProfileController::class, 'edit'])->name('edit');
         Route::put('/{umkmProfile}', [UmkmProfileController::class, 'update'])->name('update');
         Route::delete('/{umkmProfile}', [UmkmProfileController::class, 'destroy'])->name('destroy');
+        Route::get('/{umkmProfile}', [UmkmProfileController::class, 'show'])->name('show');
         
-        // Bulk delete
-        Route::post('/bulk-destroy', [UmkmProfileController::class, 'bulkDestroy'])->name('bulk-destroy');
+        // Additional routes
+        Route::get('/trash', [UmkmProfileController::class, 'trash'])->name('trash');
+        Route::post('/bulk-delete', [UmkmProfileController::class, 'bulkDelete'])->name('bulk-delete');
         
-        // For select dropdown
+        // Status routes
+        Route::post('/{umkmProfile}/verify', [UmkmProfileController::class, 'verify'])->name('verify');
+        Route::post('/{umkmProfile}/reject', [UmkmProfileController::class, 'reject'])->name('reject');
+        Route::post('/{umkmProfile}/toggle-featured', [UmkmProfileController::class, 'toggleFeatured'])->name('toggle-featured');
+        
+        // Trash restore & force delete
+        Route::post('/{id}/restore', [UmkmProfileController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [UmkmProfileController::class, 'forceDelete'])->name('force-delete');
+    
+        // For select dropdown (tambahkan jika perlu)
         Route::get('/select-options', [UmkmProfileController::class, 'getProfiles'])->name('select-options');
     });
 

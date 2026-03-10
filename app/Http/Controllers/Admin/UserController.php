@@ -8,29 +8,44 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+ public function index(Request $request)
     {
         $search = $request->get('search', '');
         $role = $request->get('role', '');
         $perPage = $request->get('per_page', 10);
         
-        $users = User::query()
-            ->when($search, function($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                      ->orWhere('email', 'like', '%' . $search . '%');
-            })
-            ->when($role && $role != 'all', function($query) use ($role) {
-                $query->where('role', $role);
-            })
-            ->latest()
-            ->paginate($perPage)
-            ->withQueryString();
+        // Debugging - lihat apa yang diterima dari request
+        Log::info('Filter role: ' . $role);
+        Log::info('Search: ' . $search);
+        
+        $query = User::query();
+        
+        // Filter berdasarkan search
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+        
+        // Filter berdasarkan role
+        if (!empty($role) && $role !== 'all') {
+            $query->where('role', $role);
+            Log::info('Applying role filter: ' . $role);
+        }
+        
+        // Urutkan dan paginasi
+        $users = $query->latest()->paginate($perPage)->withQueryString();
+        
+        // Debugging - lihat jumlah hasil
+        Log::info('Total users found: ' . $users->total());
             
         // Get stats
         $stats = [

@@ -37,11 +37,11 @@
                     <i class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
                 </a>
                 <div class="dropdown-content ml-8 space-y-1 hidden">
-                    <a href="#" class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.msme-profile.index') ? 'bg-blue-800' : '' }}">
+                    <a href="{{ route('admin.umkm-profiles.index') }}" class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.umkm-profiles.index') ? 'bg-blue-800' : '' }}">
                         <i class="fas fa-list w-4"></i>
                         <span class="text-sm">List</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.msme-profile.create') ? 'bg-blue-800' : '' }}">
+                    <a href="{{ route('admin.umkm-profiles.create') }}" class="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.umkm-profiles.create') ? 'bg-blue-800' : '' }}">
                         <i class="fas fa-plus w-4"></i>
                         <span class="text-sm">Create</span>
                     </a>
@@ -249,7 +249,7 @@
         </div>
 
         <!-- Log Out -->
-        <form method="POST" action="{{ route('logout') }}" class="w-full">
+        <form method="POST" action="/logout" class="w-full">
             @csrf
             <button type="submit" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-900 transition-colors w-full text-left bg-gray-800">
                 <i class="fas fa-sign-out-alt w-5"></i>

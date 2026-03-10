@@ -1,146 +1,102 @@
 <?php
+// app/Models/UmkmProfile.php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class UmkmProfile extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'umkm_profiles';
 
     protected $fillable = [
-        'name',
-        'slug',
-        'pelaku_umkm_id',
-        'category_id',
-        'established_year',
-        'short_description',
-        'content', //Full Story Masuk sini
-        'thumbnail',
-        'address',
-        'latitude',
-        'longitude',
-        'contact_name',
-        'phone_number',//Link nomor wa example :https://wa.me/nomorhp
-        'instagram_link',
-        'meta_title',
-        'meta_description',
-        'status' 
+        'name', 'slug', 'pelaku_umkm', 'nama_pemilik', 'tahun_berdiri',
+        'category_id', 'instagram_link', 'whatsapp_number', 'contact_person_name',
+        'contact_person_phone', 'email_umkm', 'website', 'facebook_link',
+        'twitter_link', 'tiktok_link', 'short_description', 'content',
+        'address', 'province', 'city', 'district', 'village', 'postal_code',
+        'latitude', 'longitude', 'logo', 'thumbnail', 'gallery_images',
+        'meta_title', 'meta_description', 'meta_keywords',
+        'subscription_plan_id', 'payment_proof', 'subscription_start_date',
+        'subscription_end_date', 'subscription_status', 'verification_status',
+        'profile_status', 'is_featured', 'views_count', 'admin_notes',
+        'verified_at', 'verified_by'
     ];
 
     protected $casts = [
-        'established_year' => 'integer',
+        'gallery_images' => 'array',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'tahun_berdiri' => 'integer',
+        'is_featured' => 'boolean',
+        'subscription_start_date' => 'datetime',
+        'subscription_end_date' => 'datetime',
+        'verified_at' => 'datetime',
     ];
 
-    /**
-     * Boot the model
-     */
     protected static function boot()
     {
         parent::boot();
-        
-        static::creating(function ($model) {
-            if (empty($model->slug)) {
-                $model->slug = Str::slug($model->name);
-                // Make slug unique
-                $count = 1;
-                while (self::where('slug', $model->slug)->exists()) {
-                    $model->slug = Str::slug($model->name) . '-' . $count++;
-                }
+        static::creating(function ($profile) {
+            if (empty($profile->slug)) {
+                $profile->slug = Str::slug($profile->name);
             }
         });
     }
 
-    /**
-     * Get the pelaku umkm (owner)
-     */
-
-    public function subscriptions()
-    {
-        return $this->hasMany(Subscription::class, 'umkm_id');
-    }
-
-    
-    public function pelakuUmkm()
-    {
-        return $this->belongsTo(PelakuUmkm::class, 'pelaku_umkm_id');
-    }
-
-    /**
-     * Get the category
-     */
+    // Relationships
     public function category()
     {
         return $this->belongsTo(CategoryUmkm::class, 'category_id');
     }
 
     /**
-     * Get products for this UMKM
+     * Relasi ke PelakuUmkm - PERBAIKAN INI
+     * foreign key: pelaku_umkm (di tabel umkm_profiles)
+     * owner key: id (di tabel pelaku_umkms)
      */
-    public function products()
+    public function owner()
     {
-        return $this->hasMany(ProductUmkm::class, 'umkm_id');
+        return $this->belongsTo(PelakuUmkm::class, 'pelaku_umkm', 'id');
     }
 
-    /**
-     * Scope for published profiles
-     */
-    public function scopePublished($query)
+    public function subscriptionPlan()
     {
-        return $query->where('status', 'published');
+        return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
     }
 
-    /**
-     * Scope for draft profiles
-     */
-    public function scopeDraft($query)
+    public function verifiedBy()
     {
-        return $query->where('status', 'draft');
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
-    /**
-     * Get the URL for this profile
-     */
-    public function getUrlAttribute()
+    // Scopes
+    public function scopeActive($query)
     {
-        return route('umkm.show', $this->slug);
+        return $query->where('profile_status', 'published')
+                     ->where('subscription_status', 'active')
+                     ->where('subscription_end_date', '>', now());
     }
 
-    /**
-     * Get the thumbnail URL
-     */
-    public function getThumbnailUrlAttribute()
+    public function scopePending($query)
     {
-        return $this->thumbnail ? asset('storage/' . $this->thumbnail) : asset('images/default-umkm.jpg');
+        return $query->where('profile_status', 'pending');
     }
 
-    /**
-     * Get the age of the UMKM
-     */
-    public function getAgeAttribute()
+    // Accessors
+    public function getFullAddressAttribute()
     {
-        return now()->year - $this->established_year;
-    }
-
-    /**
-     * Get status badge color
-     */
-    public function getStatusBadgeAttribute()
-    {
-        $colors = [
-            'draft' => 'bg-gray-100 text-gray-800',
-            'published' => 'bg-green-100 text-green-800',
-            'archived' => 'bg-red-100 text-red-800'
-        ];
-        
-        return $colors[$this->status] ?? 'bg-gray-100 text-gray-800';
+        return implode(', ', array_filter([
+            $this->address,
+            $this->village,
+            $this->district,
+            $this->city,
+            $this->province,
+            $this->postal_code
+        ]));
     }
 }
